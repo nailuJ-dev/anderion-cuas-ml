@@ -20,7 +20,12 @@ fn main() -> Result<()> {
         0.001,
     )?;
     let classifier = PrototypeClassifier::fit(&[(drone, "drone".into()), (other, "other".into())])?;
-    let base = PerceptionPipeline::new(Arc::new(encoder), Arc::new(detector), Arc::new(classifier), 0.2)?;
+    let base = PerceptionPipeline::new(
+        Arc::new(encoder),
+        Arc::new(detector),
+        Arc::new(classifier),
+        0.2,
+    )?;
 
     let degarbler = PrototypeMaskDegarbler::new(vec![vec![1.0, 0.0], vec![0.0, 1.0]], 0.1)?;
     let correlator = CooperativeCorrelator::new(CorrelationPolicy::new(300.0, 2_000, 30.0, 0.2)?)?;
@@ -47,14 +52,22 @@ fn main() -> Result<()> {
         2,
         Digest32::from_bytes(b"operator-approved-sensing-config"),
     )?;
-    let frame = SensingFrame::new(1_500, "ran-site-01", SensingMode::OperatorManagedActive, vec![0.8, 0.3])?;
+    let frame = SensingFrame::new(
+        1_500,
+        "ran-site-01",
+        SensingMode::OperatorManagedActive,
+        vec![0.8, 0.3],
+    )?;
     let mut provider = RecordedSensingProvider::new(capabilities, vec![frame])?;
     let session = provider.prepare(&authorization, &request, 1_500)?;
-    let acquired = provider.acquire(&session)?.ok_or_else(|| anderion_cuas_ml::SdkError::InvalidArgument("missing frame".into()))?;
+    let acquired = provider
+        .acquire(&session)?
+        .ok_or_else(|| anderion_cuas_ml::SdkError::InvalidArgument("missing frame".into()))?;
     provider.stop(session)?;
 
     let observation = acquired.to_observation("isac-1")?;
-    let candidate = CandidateKinematics::new(1_500, GeoPosition::new(48.8566, 2.3522, 40.0)?, None)?;
+    let candidate =
+        CandidateKinematics::new(1_500, GeoPosition::new(48.8566, 2.3522, 40.0)?, None)?;
     let remote_id = CooperativeTrack::new(
         CooperativeIdentityKind::RemoteId,
         "rid-demo",
@@ -64,6 +77,10 @@ fn main() -> Result<()> {
         1.0,
     )?;
     let result = pipeline.infer(&observation, Some(&candidate), &[remote_id])?;
-    println!("components={} cooperative={:?}", result.components().len(), result.components()[0].cooperative_disposition());
+    println!(
+        "components={} cooperative={:?}",
+        result.components().len(),
+        result.components()[0].cooperative_disposition()
+    );
     Ok(())
 }

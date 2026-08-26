@@ -48,7 +48,10 @@ fn correlator_matches_ais_adsb_and_remote_id_with_stable_ordering() -> Result<()
     assert_eq!(first, second);
     assert_eq!(first.len(), 3);
     assert_eq!(first[0].kind(), CooperativeIdentityKind::RemoteId);
-    assert_eq!(correlator.disposition(&first), CooperativeDisposition::MatchedCooperative);
+    assert_eq!(
+        correlator.disposition(&first),
+        CooperativeDisposition::MatchedCooperative
+    );
     Ok(())
 }
 
@@ -72,7 +75,11 @@ fn correlator_rejects_stale_and_distant_tracks() -> Result<()> {
         1.0,
     )?;
     let correlator = CooperativeCorrelator::new(CorrelationPolicy::new(100.0, 500, 10.0, 0.2)?)?;
-    assert!(correlator.correlate(&candidate, &[stale, distant])?.is_empty());
+    assert!(
+        correlator
+            .correlate(&candidate, &[stale, distant])?
+            .is_empty()
+    );
     Ok(())
 }
 

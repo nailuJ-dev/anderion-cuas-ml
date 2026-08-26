@@ -10,12 +10,18 @@ fn grouped_split_prevents_group_leakage() {
     ];
     let split = grouped_split(&rows, 0.5, 11).unwrap();
     for train in &split.train {
-        assert!(!split.test.iter().any(|test| test.group_id == train.group_id));
+        assert!(
+            !split
+                .test
+                .iter()
+                .any(|test| test.group_id == train.group_id)
+        );
     }
 }
 
 #[test]
 fn classification_metrics_compute_accuracy() {
-    let metrics = classification_metrics(&["drone", "bird", "drone"], &["drone", "bird", "bird"]).unwrap();
+    let metrics =
+        classification_metrics(&["drone", "bird", "drone"], &["drone", "bird", "bird"]).unwrap();
     assert!((metrics.accuracy - 2.0 / 3.0).abs() < 1e-6);
 }

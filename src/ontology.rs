@@ -54,9 +54,15 @@ impl OntologyNode {
         Ok(Self { id, kind, label })
     }
 
-    pub fn id(&self) -> &str { &self.id }
-    pub fn kind(&self) -> ConceptKind { self.kind }
-    pub fn label(&self) -> Option<&str> { self.label.as_deref() }
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+    pub fn kind(&self) -> ConceptKind {
+        self.kind
+    }
+    pub fn label(&self) -> Option<&str> {
+        self.label.as_deref()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -67,17 +73,31 @@ pub struct OntologyRelation {
 }
 
 impl OntologyRelation {
-    pub fn new(source: impl Into<String>, relation: RelationKind, target: impl Into<String>) -> Result<Self> {
+    pub fn new(
+        source: impl Into<String>,
+        relation: RelationKind,
+        target: impl Into<String>,
+    ) -> Result<Self> {
         let source = source.into();
         let target = target.into();
         validate_text("ontology relation source", &source, MAX_ID_BYTES)?;
         validate_text("ontology relation target", &target, MAX_ID_BYTES)?;
-        Ok(Self { source, relation, target })
+        Ok(Self {
+            source,
+            relation,
+            target,
+        })
     }
 
-    pub fn source(&self) -> &str { &self.source }
-    pub fn relation(&self) -> RelationKind { self.relation }
-    pub fn target(&self) -> &str { &self.target }
+    pub fn source(&self) -> &str {
+        &self.source
+    }
+    pub fn relation(&self) -> RelationKind {
+        self.relation
+    }
+    pub fn target(&self) -> &str {
+        &self.target
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -95,8 +115,12 @@ impl ConsistencyViolation {
         Ok(Self { code, message })
     }
 
-    pub fn code(&self) -> &str { &self.code }
-    pub fn message(&self) -> &str { &self.message }
+    pub fn code(&self) -> &str {
+        &self.code
+    }
+    pub fn message(&self) -> &str {
+        &self.message
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -105,10 +129,16 @@ pub struct ConsistencyReport {
 }
 
 impl ConsistencyReport {
-    pub fn valid() -> Self { Self { violations: Vec::new() } }
+    pub fn valid() -> Self {
+        Self {
+            violations: Vec::new(),
+        }
+    }
 
     pub fn from_violation(code: impl Into<String>, message: impl Into<String>) -> Result<Self> {
-        Ok(Self { violations: vec![ConsistencyViolation::new(code, message)?] })
+        Ok(Self {
+            violations: vec![ConsistencyViolation::new(code, message)?],
+        })
     }
 
     fn from_violations(mut violations: Vec<ConsistencyViolation>) -> Self {
@@ -117,8 +147,12 @@ impl ConsistencyReport {
         Self { violations }
     }
 
-    pub fn is_valid(&self) -> bool { self.violations.is_empty() }
-    pub fn violations(&self) -> &[ConsistencyViolation] { &self.violations }
+    pub fn is_valid(&self) -> bool {
+        self.violations.is_empty()
+    }
+    pub fn violations(&self) -> &[ConsistencyViolation] {
+        &self.violations
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -132,19 +166,34 @@ impl OntologyGraph {
     pub fn new(schema_version: impl Into<String>) -> Result<Self> {
         let schema_version = schema_version.into();
         validate_text("ontology schema version", &schema_version, 128)?;
-        Ok(Self { schema_version, nodes: BTreeMap::new(), relations: Vec::new() })
+        Ok(Self {
+            schema_version,
+            nodes: BTreeMap::new(),
+            relations: Vec::new(),
+        })
     }
 
-    pub fn schema_version(&self) -> &str { &self.schema_version }
-    pub fn nodes(&self) -> &BTreeMap<String, OntologyNode> { &self.nodes }
-    pub fn relations(&self) -> &[OntologyRelation] { &self.relations }
+    pub fn schema_version(&self) -> &str {
+        &self.schema_version
+    }
+    pub fn nodes(&self) -> &BTreeMap<String, OntologyNode> {
+        &self.nodes
+    }
+    pub fn relations(&self) -> &[OntologyRelation] {
+        &self.relations
+    }
 
     pub fn add_node(&mut self, node: OntologyNode) -> Result<()> {
         if self.nodes.len() >= MAX_NODES {
-            return Err(SdkError::DimensionLimit { actual: self.nodes.len().saturating_add(1), max: MAX_NODES });
+            return Err(SdkError::DimensionLimit {
+                actual: self.nodes.len().saturating_add(1),
+                max: MAX_NODES,
+            });
         }
         if self.nodes.contains_key(node.id()) {
-            return Err(SdkError::InvalidArgument("duplicate ontology node id".into()));
+            return Err(SdkError::InvalidArgument(
+                "duplicate ontology node id".into(),
+            ));
         }
         self.nodes.insert(node.id.clone(), node);
         Ok(())
@@ -152,10 +201,17 @@ impl OntologyGraph {
 
     pub fn add_relation(&mut self, relation: OntologyRelation) -> Result<()> {
         if self.relations.len() >= MAX_RELATIONS {
-            return Err(SdkError::DimensionLimit { actual: self.relations.len().saturating_add(1), max: MAX_RELATIONS });
+            return Err(SdkError::DimensionLimit {
+                actual: self.relations.len().saturating_add(1),
+                max: MAX_RELATIONS,
+            });
         }
-        if !self.nodes.contains_key(relation.source()) || !self.nodes.contains_key(relation.target()) {
-            return Err(SdkError::InvalidArgument("ontology relation endpoint does not exist".into()));
+        if !self.nodes.contains_key(relation.source())
+            || !self.nodes.contains_key(relation.target())
+        {
+            return Err(SdkError::InvalidArgument(
+                "ontology relation endpoint does not exist".into(),
+            ));
         }
         self.relations.push(relation);
         Ok(())
@@ -164,22 +220,38 @@ impl OntologyGraph {
     pub fn validate_reference_schema(&self) -> ConsistencyReport {
         let mut violations = Vec::new();
         if self.schema_version != "cuas-ontology-v1" {
-            violations.push(raw_violation("schema-version", "unexpected ontology schema version"));
+            violations.push(raw_violation(
+                "schema-version",
+                "unexpected ontology schema version",
+            ));
         }
         if self.nodes.len() > MAX_NODES {
             violations.push(raw_violation("node-limit", "ontology node limit exceeded"));
             return ConsistencyReport::from_violations(violations);
         }
         if self.relations.len() > MAX_RELATIONS {
-            violations.push(raw_violation("relation-limit", "ontology relation limit exceeded"));
+            violations.push(raw_violation(
+                "relation-limit",
+                "ontology relation limit exceeded",
+            ));
             return ConsistencyReport::from_violations(violations);
         }
         for (key, node) in &self.nodes {
-            if key != node.id() || validate_text("ontology node id", node.id(), MAX_ID_BYTES).is_err() {
-                violations.push(raw_violation("node-id", "ontology node id is invalid or does not match its map key"));
+            if key != node.id()
+                || validate_text("ontology node id", node.id(), MAX_ID_BYTES).is_err()
+            {
+                violations.push(raw_violation(
+                    "node-id",
+                    "ontology node id is invalid or does not match its map key",
+                ));
             }
-            if node.label().is_some_and(|label| validate_text("ontology node label", label, MAX_LABEL_BYTES).is_err()) {
-                violations.push(raw_violation("node-label", "ontology node label is invalid"));
+            if node.label().is_some_and(|label| {
+                validate_text("ontology node label", label, MAX_LABEL_BYTES).is_err()
+            }) {
+                violations.push(raw_violation(
+                    "node-label",
+                    "ontology node label is invalid",
+                ));
             }
         }
         let mut cardinality: BTreeMap<(String, RelationKind), usize> = BTreeMap::new();
@@ -187,16 +259,26 @@ impl OntologyGraph {
             let source = self.nodes.get(relation.source());
             let target = self.nodes.get(relation.target());
             let (Some(source), Some(target)) = (source, target) else {
-                violations.push(raw_violation("missing-endpoint", "ontology relation endpoint is missing"));
+                violations.push(raw_violation(
+                    "missing-endpoint",
+                    "ontology relation endpoint is missing",
+                ));
                 continue;
             };
             if !allowed_relation(source.kind(), relation.relation(), target.kind()) {
                 violations.push(raw_violation(
                     "relation-schema",
-                    &format!("relation {:?} is not allowed from {:?} to {:?}", relation.relation(), source.kind(), target.kind()),
+                    &format!(
+                        "relation {:?} is not allowed from {:?} to {:?}",
+                        relation.relation(),
+                        source.kind(),
+                        target.kind()
+                    ),
                 ));
             }
-            *cardinality.entry((relation.source.clone(), relation.relation())).or_insert(0) += 1;
+            *cardinality
+                .entry((relation.source.clone(), relation.relation()))
+                .or_insert(0) += 1;
         }
         for ((source, relation), count) in cardinality {
             if max_cardinality(relation).is_some_and(|max| count > max) {
@@ -210,20 +292,68 @@ impl OntologyGraph {
     }
 }
 
-pub fn semantic_graph_for_perception(observation: &Observation, result: &PerceptionResult) -> Result<OntologyGraph> {
-    let top = result.classification.first().ok_or_else(|| SdkError::InvalidArgument("perception result has no class score".into()))?;
+pub fn semantic_graph_for_perception(
+    observation: &Observation,
+    result: &PerceptionResult,
+) -> Result<OntologyGraph> {
+    let top = result
+        .classification
+        .first()
+        .ok_or_else(|| SdkError::InvalidArgument("perception result has no class score".into()))?;
     let mut graph = OntologyGraph::new("cuas-ontology-v1")?;
-    graph.add_node(OntologyNode::new("observation:primary", ConceptKind::Observation, None)?)?;
-    graph.add_node(OntologyNode::new("sensor:primary", ConceptKind::Sensor, Some(observation.sensor_id().to_string()))?)?;
-    graph.add_node(OntologyNode::new("candidate:primary", ConceptKind::Candidate, Some(observation.id().to_string()))?)?;
-    graph.add_node(OntologyNode::new("class:primary", ConceptKind::ObjectClass, Some(top.label.clone()))?)?;
-    graph.add_relation(OntologyRelation::new("observation:primary", RelationKind::ObservedBy, "sensor:primary")?)?;
-    graph.add_relation(OntologyRelation::new("candidate:primary", RelationKind::DerivedFrom, "observation:primary")?)?;
-    graph.add_relation(OntologyRelation::new("candidate:primary", RelationKind::ClassifiedAs, "class:primary")?)?;
+    graph.add_node(OntologyNode::new(
+        "observation:primary",
+        ConceptKind::Observation,
+        None,
+    )?)?;
+    graph.add_node(OntologyNode::new(
+        "sensor:primary",
+        ConceptKind::Sensor,
+        Some(observation.sensor_id().to_string()),
+    )?)?;
+    graph.add_node(OntologyNode::new(
+        "candidate:primary",
+        ConceptKind::Candidate,
+        Some(observation.id().to_string()),
+    )?)?;
+    graph.add_node(OntologyNode::new(
+        "class:primary",
+        ConceptKind::ObjectClass,
+        Some(top.label.clone()),
+    )?)?;
+    graph.add_relation(OntologyRelation::new(
+        "observation:primary",
+        RelationKind::ObservedBy,
+        "sensor:primary",
+    )?)?;
+    graph.add_relation(OntologyRelation::new(
+        "candidate:primary",
+        RelationKind::DerivedFrom,
+        "observation:primary",
+    )?)?;
+    graph.add_relation(OntologyRelation::new(
+        "candidate:primary",
+        RelationKind::ClassifiedAs,
+        "class:primary",
+    )?)?;
     if let Some(localization) = &result.localization {
-        let label = format!("{:.6},{:.6},{:.6};sigma={:.3}", localization.position.x, localization.position.y, localization.position.z, localization.sigma_m);
-        graph.add_node(OntologyNode::new("location:primary", ConceptKind::LocationEstimate, Some(label))?)?;
-        graph.add_relation(OntologyRelation::new("candidate:primary", RelationKind::HasLocation, "location:primary")?)?;
+        let label = format!(
+            "{:.6},{:.6},{:.6};sigma={:.3}",
+            localization.position.x,
+            localization.position.y,
+            localization.position.z,
+            localization.sigma_m
+        );
+        graph.add_node(OntologyNode::new(
+            "location:primary",
+            ConceptKind::LocationEstimate,
+            Some(label),
+        )?)?;
+        graph.add_relation(OntologyRelation::new(
+            "candidate:primary",
+            RelationKind::HasLocation,
+            "location:primary",
+        )?)?;
     }
     Ok(graph)
 }
@@ -231,36 +361,79 @@ pub fn semantic_graph_for_perception(observation: &Observation, result: &Percept
 fn allowed_relation(source: ConceptKind, relation: RelationKind, target: ConceptKind) -> bool {
     matches!(
         (source, relation, target),
-        (ConceptKind::Candidate, RelationKind::DerivedFrom, ConceptKind::Observation)
-            | (ConceptKind::Observation, RelationKind::ObservedBy, ConceptKind::Sensor)
-            | (ConceptKind::Candidate, RelationKind::ClassifiedAs, ConceptKind::ObjectClass)
-            | (ConceptKind::Candidate, RelationKind::AssociatedWith, ConceptKind::Track)
-            | (ConceptKind::Candidate, RelationKind::HasLocation, ConceptKind::LocationEstimate)
-            | (ConceptKind::Candidate, RelationKind::CorrelatesWith, ConceptKind::CooperativeIdentity)
-            | (ConceptKind::Track, RelationKind::Exhibits, ConceptKind::BehaviourPattern)
-            | (ConceptKind::Track, RelationKind::Resembles, ConceptKind::HistoricalPattern)
-            | (ConceptKind::Evidence, RelationKind::Supports, ConceptKind::Candidate)
-            | (ConceptKind::Candidate, RelationKind::SupportedBy, ConceptKind::Evidence)
+        (
+            ConceptKind::Candidate,
+            RelationKind::DerivedFrom,
+            ConceptKind::Observation
+        ) | (
+            ConceptKind::Observation,
+            RelationKind::ObservedBy,
+            ConceptKind::Sensor
+        ) | (
+            ConceptKind::Candidate,
+            RelationKind::ClassifiedAs,
+            ConceptKind::ObjectClass
+        ) | (
+            ConceptKind::Candidate,
+            RelationKind::AssociatedWith,
+            ConceptKind::Track
+        ) | (
+            ConceptKind::Candidate,
+            RelationKind::HasLocation,
+            ConceptKind::LocationEstimate
+        ) | (
+            ConceptKind::Candidate,
+            RelationKind::CorrelatesWith,
+            ConceptKind::CooperativeIdentity
+        ) | (
+            ConceptKind::Track,
+            RelationKind::Exhibits,
+            ConceptKind::BehaviourPattern
+        ) | (
+            ConceptKind::Track,
+            RelationKind::Resembles,
+            ConceptKind::HistoricalPattern
+        ) | (
+            ConceptKind::Evidence,
+            RelationKind::Supports,
+            ConceptKind::Candidate
+        ) | (
+            ConceptKind::Candidate,
+            RelationKind::SupportedBy,
+            ConceptKind::Evidence
+        )
     )
 }
 
 fn max_cardinality(relation: RelationKind) -> Option<usize> {
     match relation {
-        RelationKind::DerivedFrom | RelationKind::ObservedBy | RelationKind::ClassifiedAs | RelationKind::AssociatedWith | RelationKind::HasLocation => Some(1),
+        RelationKind::DerivedFrom
+        | RelationKind::ObservedBy
+        | RelationKind::ClassifiedAs
+        | RelationKind::AssociatedWith
+        | RelationKind::HasLocation => Some(1),
         _ => None,
     }
 }
 
 fn raw_violation(code: &str, message: &str) -> ConsistencyViolation {
-    ConsistencyViolation { code: code.to_string(), message: message.to_string() }
+    ConsistencyViolation {
+        code: code.to_string(),
+        message: message.to_string(),
+    }
 }
 
 fn validate_text(field: &str, value: &str, max_bytes: usize) -> Result<()> {
     if value.trim().is_empty() {
-        return Err(SdkError::InvalidArgument(format!("{field} must not be empty")));
+        return Err(SdkError::InvalidArgument(format!(
+            "{field} must not be empty"
+        )));
     }
     if value.len() > max_bytes {
-        return Err(SdkError::DimensionLimit { actual: value.len(), max: max_bytes });
+        return Err(SdkError::DimensionLimit {
+            actual: value.len(),
+            max: max_bytes,
+        });
     }
     Ok(())
 }

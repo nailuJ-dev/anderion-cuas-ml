@@ -28,7 +28,13 @@ fn prototype_mask_degarbler_separates_components_deterministically() -> Result<(
     assert!((0.0..=1.0).contains(&first.separation_confidence()));
 
     let reconstructed: Vec<f32> = (0..observation.features().len())
-        .map(|index| first.components().iter().map(|component| component.features()[index]).sum())
+        .map(|index| {
+            first
+                .components()
+                .iter()
+                .map(|component| component.features()[index])
+                .sum()
+        })
         .collect();
     for (actual, expected) in reconstructed.iter().zip(observation.features()) {
         assert!((actual - expected).abs() <= 1e-6);

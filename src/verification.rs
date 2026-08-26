@@ -17,11 +17,17 @@ impl Digest32 {
         finish_hash(hasher)
     }
 
-    pub(crate) fn from_digest_bytes(bytes: [u8; 32]) -> Self { Self(bytes) }
+    pub(crate) fn from_digest_bytes(bytes: [u8; 32]) -> Self {
+        Self(bytes)
+    }
 
     pub fn from_hex(value: &str) -> Result<Self> {
         let bytes = value.as_bytes();
-        if bytes.len() != 64 { return Err(SdkError::InvalidArgument("SHA-256 hex digest must contain 64 characters".into())); }
+        if bytes.len() != 64 {
+            return Err(SdkError::InvalidArgument(
+                "SHA-256 hex digest must contain 64 characters".into(),
+            ));
+        }
         let mut output = [0_u8; 32];
         for index in 0..32 {
             let high = hex_nibble(bytes[index * 2])?;
@@ -31,7 +37,9 @@ impl Digest32 {
         Ok(Self(output))
     }
 
-    pub fn as_bytes(&self) -> &[u8; 32] { &self.0 }
+    pub fn as_bytes(&self) -> &[u8; 32] {
+        &self.0
+    }
 
     pub fn to_hex(&self) -> String {
         const HEX: &[u8; 16] = b"0123456789abcdef";
@@ -65,14 +73,30 @@ impl VerificationContext {
         let pipeline_version = pipeline_version.into();
         validate_context_text("ontology_version", &ontology_version)?;
         validate_context_text("pipeline_version", &pipeline_version)?;
-        Ok(Self { model_digest, config_digest, ontology_version, pipeline_version, seed })
+        Ok(Self {
+            model_digest,
+            config_digest,
+            ontology_version,
+            pipeline_version,
+            seed,
+        })
     }
 
-    pub fn model_digest(&self) -> Digest32 { self.model_digest }
-    pub fn config_digest(&self) -> Digest32 { self.config_digest }
-    pub fn ontology_version(&self) -> &str { &self.ontology_version }
-    pub fn pipeline_version(&self) -> &str { &self.pipeline_version }
-    pub fn seed(&self) -> u64 { self.seed }
+    pub fn model_digest(&self) -> Digest32 {
+        self.model_digest
+    }
+    pub fn config_digest(&self) -> Digest32 {
+        self.config_digest
+    }
+    pub fn ontology_version(&self) -> &str {
+        &self.ontology_version
+    }
+    pub fn pipeline_version(&self) -> &str {
+        &self.pipeline_version
+    }
+    pub fn seed(&self) -> u64 {
+        self.seed
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -109,7 +133,9 @@ impl PerceptionVerificationPolicy {
         })
     }
 
-    pub fn fixed_point_scale(&self) -> u32 { self.fixed_point_scale }
+    pub fn fixed_point_scale(&self) -> u32 {
+        self.fixed_point_scale
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -141,15 +167,33 @@ pub struct ResultCertificate {
 }
 
 impl ResultCertificate {
-    pub fn algorithm_version(&self) -> u32 { self.algorithm_version }
-    pub fn input_digest(&self) -> Digest32 { self.input_digest }
-    pub fn context_digest(&self) -> Digest32 { self.context_digest }
-    pub fn policy_digest(&self) -> Digest32 { self.policy_digest }
-    pub fn exact_result_digest(&self) -> Digest32 { self.exact_result_digest }
-    pub fn decision_digest(&self) -> Digest32 { self.decision_digest }
-    pub fn decision(&self) -> VerificationDecision { self.decision }
-    pub fn ontology_valid(&self) -> bool { self.ontology_valid }
-    pub fn ontology_violation_count(&self) -> usize { self.ontology_violation_count }
+    pub fn algorithm_version(&self) -> u32 {
+        self.algorithm_version
+    }
+    pub fn input_digest(&self) -> Digest32 {
+        self.input_digest
+    }
+    pub fn context_digest(&self) -> Digest32 {
+        self.context_digest
+    }
+    pub fn policy_digest(&self) -> Digest32 {
+        self.policy_digest
+    }
+    pub fn exact_result_digest(&self) -> Digest32 {
+        self.exact_result_digest
+    }
+    pub fn decision_digest(&self) -> Digest32 {
+        self.decision_digest
+    }
+    pub fn decision(&self) -> VerificationDecision {
+        self.decision
+    }
+    pub fn ontology_valid(&self) -> bool {
+        self.ontology_valid
+    }
+    pub fn ontology_violation_count(&self) -> usize {
+        self.ontology_violation_count
+    }
 }
 
 pub struct DeterministicVerifier;
@@ -165,18 +209,21 @@ impl DeterministicVerifier {
         validate_context(context)?;
         validate_policy(policy)?;
         validate_result(result)?;
-        let top = result.classification.first().ok_or_else(|| SdkError::InvalidArgument("perception result has no class score".into()))?;
+        let top = result.classification.first().ok_or_else(|| {
+            SdkError::InvalidArgument("perception result has no class score".into())
+        })?;
         let decision = if policy.require_ontology_consistency && !consistency.is_valid() {
             VerificationDecision::Review
-        } else if result.detection.uncertainty > policy.max_detection_uncertainty {
-            VerificationDecision::Abstain
-        } else if result.detection.detected
-            && (result.unknown
-                || result.classification_uncertainty > policy.max_classification_uncertainty
-                || top.probability < policy.min_class_confidence)
+        } else if result.detection.uncertainty > policy.max_detection_uncertainty
+            || (result.detection.detected
+                && (result.unknown
+                    || result.classification_uncertainty > policy.max_classification_uncertainty
+                    || top.probability < policy.min_class_confidence))
         {
             VerificationDecision::Abstain
-        } else if result.localization.as_ref().is_some_and(|localization| localization.confidence < policy.min_localization_confidence) {
+        } else if result.localization.as_ref().is_some_and(|localization| {
+            localization.confidence < policy.min_localization_confidence
+        }) {
             VerificationDecision::Review
         } else {
             VerificationDecision::Accept
@@ -194,7 +241,10 @@ impl DeterministicVerifier {
         })
     }
 
-    pub fn compare_replay(original: &ResultCertificate, replayed: &ResultCertificate) -> ReplayStatus {
+    pub fn compare_replay(
+        original: &ResultCertificate,
+        replayed: &ResultCertificate,
+    ) -> ReplayStatus {
         if original.algorithm_version != replayed.algorithm_version
             || original.input_digest != replayed.input_digest
             || original.context_digest != replayed.context_digest
@@ -218,32 +268,54 @@ impl DeterministicVerifier {
 
 fn validate_result(result: &PerceptionResult) -> Result<()> {
     if result.observation_id.trim().is_empty() || result.sensor_id.trim().is_empty() {
-        return Err(SdkError::InvalidArgument("perception identifiers must not be empty".into()));
+        return Err(SdkError::InvalidArgument(
+            "perception identifiers must not be empty".into(),
+        ));
     }
     validate_probability(result.detection.probability)?;
     validate_probability(result.detection.uncertainty)?;
     if result.classification.is_empty() {
-        return Err(SdkError::InvalidArgument("perception result must contain class scores".into()));
+        return Err(SdkError::InvalidArgument(
+            "perception result must contain class scores".into(),
+        ));
     }
     for score in &result.classification {
         if score.label.trim().is_empty() || score.label.len() > 4_096 {
-            return Err(SdkError::InvalidArgument("perception class label is invalid".into()));
+            return Err(SdkError::InvalidArgument(
+                "perception class label is invalid".into(),
+            ));
         }
         validate_probability(score.probability)?;
     }
     validate_probability(result.classification_uncertainty)?;
     if result.embedding.values().is_empty() || result.embedding.values().len() > 8_192 {
-        return Err(SdkError::DimensionLimit { actual: result.embedding.values().len(), max: 8_192 });
+        return Err(SdkError::DimensionLimit {
+            actual: result.embedding.values().len(),
+            max: 8_192,
+        });
     }
-    if let Some((index, _)) = result.embedding.values().iter().enumerate().find(|(_, value)| !value.is_finite()) {
+    if let Some((index, _)) = result
+        .embedding
+        .values()
+        .iter()
+        .enumerate()
+        .find(|(_, value)| !value.is_finite())
+    {
         return Err(SdkError::NonFiniteValue { index });
     }
     if let Some(localization) = &result.localization {
-        if !localization.position.x.is_finite() || !localization.position.y.is_finite() || !localization.position.z.is_finite() {
-            return Err(SdkError::InvalidArgument("localization coordinates must be finite".into()));
+        if !localization.position.x.is_finite()
+            || !localization.position.y.is_finite()
+            || !localization.position.z.is_finite()
+        {
+            return Err(SdkError::InvalidArgument(
+                "localization coordinates must be finite".into(),
+            ));
         }
         if !localization.sigma_m.is_finite() || localization.sigma_m < 0.0 {
-            return Err(SdkError::InvalidArgument("localization sigma must be finite and non-negative".into()));
+            return Err(SdkError::InvalidArgument(
+                "localization sigma must be finite and non-negative".into(),
+            ));
         }
         validate_probability(localization.confidence)?;
     }
@@ -324,7 +396,10 @@ fn hash_result_exact(result: &PerceptionResult) -> Digest32 {
 }
 
 fn hash_result_decision(result: &PerceptionResult, scale: u32) -> Result<Digest32> {
-    let top = result.classification.first().ok_or_else(|| SdkError::InvalidArgument("perception result has no class score".into()))?;
+    let top = result
+        .classification
+        .first()
+        .ok_or_else(|| SdkError::InvalidArgument("perception result has no class score".into()))?;
     let mut hasher = domain_hasher(b"anderion-cuas-decision-v1");
     hasher.update(quantize_probability(result.detection.probability, scale)?.to_le_bytes());
     hasher.update([u8::from(result.detection.detected)]);
@@ -355,7 +430,9 @@ fn update_bytes(hasher: &mut Sha256, bytes: &[u8]) {
 
 fn update_f32_slice(hasher: &mut Sha256, values: &[f32]) {
     hasher.update((values.len() as u64).to_le_bytes());
-    for value in values { update_f32(hasher, *value); }
+    for value in values {
+        update_f32(hasher, *value);
+    }
 }
 
 fn update_f32(hasher: &mut Sha256, value: f32) {
@@ -389,14 +466,25 @@ fn validate_probability(value: f32) -> Result<()> {
 
 fn validate_scale(scale: u32) -> Result<()> {
     if scale == 0 || scale > MAX_FIXED_POINT_SCALE {
-        return Err(SdkError::InvalidArgument("fixed_point_scale must be in 1..=1_000_000_000".into()));
+        return Err(SdkError::InvalidArgument(
+            "fixed_point_scale must be in 1..=1_000_000_000".into(),
+        ));
     }
     Ok(())
 }
 
 fn validate_context_text(field: &str, value: &str) -> Result<()> {
-    if value.trim().is_empty() { return Err(SdkError::InvalidArgument(format!("{field} must not be empty"))); }
-    if value.len() > MAX_CONTEXT_TEXT_BYTES { return Err(SdkError::DimensionLimit { actual: value.len(), max: MAX_CONTEXT_TEXT_BYTES }); }
+    if value.trim().is_empty() {
+        return Err(SdkError::InvalidArgument(format!(
+            "{field} must not be empty"
+        )));
+    }
+    if value.len() > MAX_CONTEXT_TEXT_BYTES {
+        return Err(SdkError::DimensionLimit {
+            actual: value.len(),
+            max: MAX_CONTEXT_TEXT_BYTES,
+        });
+    }
     Ok(())
 }
 
@@ -405,6 +493,8 @@ fn hex_nibble(value: u8) -> Result<u8> {
         b'0'..=b'9' => Ok(value - b'0'),
         b'a'..=b'f' => Ok(value - b'a' + 10),
         b'A'..=b'F' => Ok(value - b'A' + 10),
-        _ => Err(SdkError::InvalidArgument("invalid SHA-256 hex digest".into())),
+        _ => Err(SdkError::InvalidArgument(
+            "invalid SHA-256 hex digest".into(),
+        )),
     }
 }

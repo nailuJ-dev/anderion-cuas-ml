@@ -18,10 +18,18 @@ pub struct PerceptionComponentResult {
 }
 
 impl PerceptionComponentResult {
-    pub fn source_component_index(&self) -> usize { self.source_component_index }
-    pub fn perception(&self) -> &PerceptionResult { &self.perception }
-    pub fn cooperative_correlations(&self) -> &[CooperativeCorrelation] { &self.cooperative_correlations }
-    pub fn cooperative_disposition(&self) -> CooperativeDisposition { self.cooperative_disposition }
+    pub fn source_component_index(&self) -> usize {
+        self.source_component_index
+    }
+    pub fn perception(&self) -> &PerceptionResult {
+        &self.perception
+    }
+    pub fn cooperative_correlations(&self) -> &[CooperativeCorrelation] {
+        &self.cooperative_correlations
+    }
+    pub fn cooperative_disposition(&self) -> CooperativeDisposition {
+        self.cooperative_disposition
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -32,9 +40,15 @@ pub struct EnhancedPerceptionResult {
 }
 
 impl EnhancedPerceptionResult {
-    pub fn source_observation_id(&self) -> &str { &self.source_observation_id }
-    pub fn separation(&self) -> &DegarblingResult { &self.separation }
-    pub fn components(&self) -> &[PerceptionComponentResult] { &self.components }
+    pub fn source_observation_id(&self) -> &str {
+        &self.source_observation_id
+    }
+    pub fn separation(&self) -> &DegarblingResult {
+        &self.separation
+    }
+    pub fn components(&self) -> &[PerceptionComponentResult] {
+        &self.components
+    }
 
     pub fn evidence_digest(&self) -> Digest32 {
         let mut hasher = Sha256::new();
@@ -64,7 +78,10 @@ impl EnhancedPerceptionResult {
                 update_f64(&mut hasher, correlation.spatial_distance_m());
                 hasher.update(correlation.time_delta_ms().to_le_bytes());
                 match correlation.velocity_delta_mps() {
-                    Some(value) => { hasher.update([1]); update_f64(&mut hasher, value); }
+                    Some(value) => {
+                        hasher.update([1]);
+                        update_f64(&mut hasher, value);
+                    }
                     None => hasher.update([0]),
                 }
                 update_f32(&mut hasher, correlation.score());
@@ -86,7 +103,11 @@ pub struct EnhancedPerceptionPipeline {
 
 impl EnhancedPerceptionPipeline {
     pub fn new(pipeline: PerceptionPipeline) -> Self {
-        Self { pipeline, degarbler: None, correlator: None }
+        Self {
+            pipeline,
+            degarbler: None,
+            correlator: None,
+        }
     }
 
     pub fn with_degarbler(mut self, model: Arc<dyn DegarblingModel>) -> Self {
@@ -110,7 +131,9 @@ impl EnhancedPerceptionPipeline {
             None => IdentityDegarbler.separate(observation)?,
         };
         let correlations = match (&self.correlator, candidate) {
-            (Some(correlator), Some(kinematics)) => correlator.correlate(kinematics, cooperative_tracks)?,
+            (Some(correlator), Some(kinematics)) => {
+                correlator.correlate(kinematics, cooperative_tracks)?
+            }
             _ => Vec::new(),
         };
         let disposition = match self.correlator.as_ref() {
@@ -177,7 +200,9 @@ fn update_bytes(hasher: &mut Sha256, bytes: &[u8]) {
 
 fn update_f32_slice(hasher: &mut Sha256, values: &[f32]) {
     hasher.update((values.len() as u64).to_le_bytes());
-    for value in values { update_f32(hasher, *value); }
+    for value in values {
+        update_f32(hasher, *value);
+    }
 }
 
 fn update_f32(hasher: &mut Sha256, value: f32) {

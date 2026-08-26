@@ -11,9 +11,15 @@ pub struct SoftLabelSample {
 
 impl SoftLabelSample {
     pub fn new(embedding: Embedding, scores: Vec<ClassScore>) -> Result<Self> {
-        if scores.is_empty() { return Err(SdkError::EmptyDataset); }
+        if scores.is_empty() {
+            return Err(SdkError::EmptyDataset);
+        }
         let mass: f32 = scores.iter().map(|score| score.probability).sum();
-        if !mass.is_finite() || mass <= 0.0 { return Err(SdkError::InvalidArgument("soft labels require positive finite mass".into())); }
+        if !mass.is_finite() || mass <= 0.0 {
+            return Err(SdkError::InvalidArgument(
+                "soft labels require positive finite mass".into(),
+            ));
+        }
         Ok(Self { embedding, scores })
     }
 }
@@ -27,41 +33,90 @@ pub struct DistilledPrototypeClassifier {
 
 impl DistilledPrototypeClassifier {
     pub fn fit(samples: &[SoftLabelSample], temperature: f32) -> Result<Self> {
-        if samples.is_empty() { return Err(SdkError::EmptyDataset); }
-        if !temperature.is_finite() || temperature <= 0.0 { return Err(SdkError::InvalidArgument("temperature must be finite and positive".into())); }
+        if samples.is_empty() {
+            return Err(SdkError::EmptyDataset);
+        }
+        if !temperature.is_finite() || temperature <= 0.0 {
+            return Err(SdkError::InvalidArgument(
+                "temperature must be finite and positive".into(),
+            ));
+        }
         let dimension = samples[0].embedding.dim();
         let mut sums: BTreeMap<String, Vec<f32>> = BTreeMap::new();
         let mut masses: BTreeMap<String, f32> = BTreeMap::new();
         for sample in samples {
-            if sample.embedding.dim() != dimension { return Err(SdkError::DimensionMismatch { expected: dimension, actual: sample.embedding.dim() }); }
+            if sample.embedding.dim() != dimension {
+                return Err(SdkError::DimensionMismatch {
+                    expected: dimension,
+                    actual: sample.embedding.dim(),
+                });
+            }
             for score in &sample.scores {
-                let sum = sums.entry(score.label.clone()).or_insert_with(|| vec![0.0; dimension]);
-                for (dst, value) in sum.iter_mut().zip(sample.embedding.values()) { *dst += score.probability * *value; }
+                let sum = sums
+                    .entry(score.label.clone())
+                    .or_insert_with(|| vec![0.0; dimension]);
+                for (dst, value) in sum.iter_mut().zip(sample.embedding.values()) {
+                    *dst += score.probability * *value;
+                }
                 *masses.entry(score.label.clone()).or_insert(0.0) += score.probability;
             }
         }
         let mut prototypes = BTreeMap::new();
         for (label, mut values) in sums {
             let mass = masses.get(&label).copied().unwrap_or(0.0);
-            if mass <= f32::EPSILON { continue; }
-            for value in &mut values { *value /= mass; }
+            if mass <= f32::EPSILON {
+                continue;
+            }
+            for value in &mut values {
+                *value /= mass;
+            }
             prototypes.insert(label, values);
         }
-        if prototypes.is_empty() || prototypes.values().flatten().any(|value| !value.is_finite()) {
-            return Err(SdkError::InvalidArgument("distillation produced invalid prototypes".into()));
+        if prototypes.is_empty()
+            || prototypes
+                .values()
+                .flatten()
+                .any(|value| !value.is_finite())
+        {
+            return Err(SdkError::InvalidArgument(
+                "distillation produced invalid prototypes".into(),
+            ));
         }
-        Ok(Self { dimension, prototypes, temperature })
+        Ok(Self {
+            dimension,
+            prototypes,
+            temperature,
+        })
     }
 }
 
 impl Classifier for DistilledPrototypeClassifier {
     fn classify(&self, embedding: &Embedding) -> Result<Vec<ClassScore>> {
-        if embedding.dim() != self.dimension { return Err(SdkError::DimensionMismatch { expected: self.dimension, actual: embedding.dim() }); }
-        let logits = self.prototypes.iter().map(|(label, prototype)| {
-            let distance: f32 = embedding.values().iter().zip(prototype).map(|(x, y)| { let d = x - y; d * d }).sum();
-            (label.clone(), -distance / self.temperature)
-        }).collect::<Vec<_>>();
+        if embedding.dim() != self.dimension {
+            return Err(SdkError::DimensionMismatch {
+                expected: self.dimension,
+                actual: embedding.dim(),
+            });
+        }
+        let logits = self
+            .prototypes
+            .iter()
+            .map(|(label, prototype)| {
+                let distance: f32 = embedding
+                    .values()
+                    .iter()
+                    .zip(prototype)
+                    .map(|(x, y)| {
+                        let d = x - y;
+                        d * d
+                    })
+                    .sum();
+                (label.clone(), -distance / self.temperature)
+            })
+            .collect::<Vec<_>>();
         softmax(&logits)
     }
-    fn input_dim(&self) -> usize { self.dimension }
+    fn input_dim(&self) -> usize {
+        self.dimension
+    }
 }

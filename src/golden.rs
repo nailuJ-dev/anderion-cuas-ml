@@ -6,13 +6,13 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    augment_graph_with_cooperative_correlations, BinaryLogisticDetector, CooperativeCorrelation,
-    CooperativeCorrelator, CooperativeDisposition, CorrelationPolicy, DegarblingModel,
-    DeterministicVerifier, Digest32, Encoder, EnhancedPerceptionPipeline, GoldenCuasScenario,
-    GoldenCuasSource, HashProjectionEncoder, LinearLocalizer, Localization, PerceptionPipeline,
-    PerceptionVerificationPolicy, Position3, PrototypeClassifier, ReferenceCuasFeatureAdapter,
-    RecordedSensorFrame, ReplayStatus, Result, ResultCertificate, SdkError,
-    VerificationContext, VerificationDecision, semantic_graph_for_perception,
+    BinaryLogisticDetector, CooperativeCorrelation, CooperativeCorrelator, CooperativeDisposition,
+    CorrelationPolicy, DegarblingModel, DeterministicVerifier, Digest32, Encoder,
+    EnhancedPerceptionPipeline, GoldenCuasScenario, GoldenCuasSource, HashProjectionEncoder,
+    LinearLocalizer, Localization, PerceptionPipeline, PerceptionVerificationPolicy, Position3,
+    PrototypeClassifier, RecordedSensorFrame, ReferenceCuasFeatureAdapter, ReplayStatus, Result,
+    ResultCertificate, SdkError, VerificationContext, VerificationDecision,
+    augment_graph_with_cooperative_correlations, semantic_graph_for_perception,
 };
 
 const MAX_GOLDEN_FILE_BYTES: usize = 32 * 1024 * 1024;
@@ -39,16 +39,31 @@ impl GoldenCuasTrainingSample {
         let class_label = class_label.into();
         frame.validate()?;
         if class_label.trim().is_empty() || class_label.len() > 4_096 {
-            return Err(SdkError::InvalidArgument("golden C-UAS class label must be non-empty and bounded".into()));
+            return Err(SdkError::InvalidArgument(
+                "golden C-UAS class label must be non-empty and bounded".into(),
+            ));
         }
         Position3::new(position.x, position.y, position.z)?;
-        Ok(Self { frame, detected, class_label, position })
+        Ok(Self {
+            frame,
+            detected,
+            class_label,
+            position,
+        })
     }
 
-    pub fn frame(&self) -> &RecordedSensorFrame { &self.frame }
-    pub fn detected(&self) -> bool { self.detected }
-    pub fn class_label(&self) -> &str { &self.class_label }
-    pub fn position(&self) -> Position3 { self.position }
+    pub fn frame(&self) -> &RecordedSensorFrame {
+        &self.frame
+    }
+    pub fn detected(&self) -> bool {
+        self.detected
+    }
+    pub fn class_label(&self) -> &str {
+        &self.class_label
+    }
+    pub fn position(&self) -> Position3 {
+        self.position
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -79,17 +94,39 @@ pub struct GoldenCuasComponentReport {
 }
 
 impl GoldenCuasComponentReport {
-    pub fn source_component_index(&self) -> usize { self.source_component_index }
-    pub fn predicted_label(&self) -> &str { &self.predicted_label }
-    pub fn probability(&self) -> f32 { self.probability }
-    pub fn detected(&self) -> bool { self.detected }
-    pub fn unknown(&self) -> bool { self.unknown }
-    pub fn localization(&self) -> Option<&Localization> { self.localization.as_ref() }
-    pub fn cooperative_disposition(&self) -> CooperativeDisposition { self.cooperative_disposition }
-    pub fn cooperative_correlations(&self) -> &[CooperativeCorrelation] { &self.cooperative_correlations }
-    pub fn verification_decision(&self) -> VerificationDecision { self.verification_decision }
-    pub fn ontology_valid(&self) -> bool { self.ontology_valid }
-    pub fn certificate(&self) -> &ResultCertificate { &self.certificate }
+    pub fn source_component_index(&self) -> usize {
+        self.source_component_index
+    }
+    pub fn predicted_label(&self) -> &str {
+        &self.predicted_label
+    }
+    pub fn probability(&self) -> f32 {
+        self.probability
+    }
+    pub fn detected(&self) -> bool {
+        self.detected
+    }
+    pub fn unknown(&self) -> bool {
+        self.unknown
+    }
+    pub fn localization(&self) -> Option<&Localization> {
+        self.localization.as_ref()
+    }
+    pub fn cooperative_disposition(&self) -> CooperativeDisposition {
+        self.cooperative_disposition
+    }
+    pub fn cooperative_correlations(&self) -> &[CooperativeCorrelation] {
+        &self.cooperative_correlations
+    }
+    pub fn verification_decision(&self) -> VerificationDecision {
+        self.verification_decision
+    }
+    pub fn ontology_valid(&self) -> bool {
+        self.ontology_valid
+    }
+    pub fn certificate(&self) -> &ResultCertificate {
+        &self.certificate
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -102,14 +139,29 @@ pub struct GoldenCuasReport {
 }
 
 impl GoldenCuasReport {
-    pub fn scenario_name(&self) -> &str { &self.scenario_name }
-    pub fn expected_label(&self) -> Option<&str> { self.expected_label.as_deref() }
-    pub fn evidence_digest_sha256(&self) -> &str { &self.evidence_digest_sha256 }
-    pub fn components(&self) -> &[GoldenCuasComponentReport] { &self.components }
-    pub fn fixture_metrics_only(&self) -> bool { self.fixture_metrics_only }
+    pub fn scenario_name(&self) -> &str {
+        &self.scenario_name
+    }
+    pub fn expected_label(&self) -> Option<&str> {
+        self.expected_label.as_deref()
+    }
+    pub fn evidence_digest_sha256(&self) -> &str {
+        &self.evidence_digest_sha256
+    }
+    pub fn components(&self) -> &[GoldenCuasComponentReport] {
+        &self.components
+    }
+    pub fn fixture_metrics_only(&self) -> bool {
+        self.fixture_metrics_only
+    }
     pub fn correct(&self) -> Option<bool> {
-        let predicted = self.components.first().map(GoldenCuasComponentReport::predicted_label)?;
-        self.expected_label.as_ref().map(|expected| expected == predicted)
+        let predicted = self
+            .components
+            .first()
+            .map(GoldenCuasComponentReport::predicted_label)?;
+        self.expected_label
+            .as_ref()
+            .map(|expected| expected == predicted)
     }
 }
 
@@ -140,13 +192,20 @@ pub struct GoldenCuasModel {
 impl GoldenCuasModel {
     pub fn fit(samples: &[GoldenCuasTrainingSample], seed: u64) -> Result<Self> {
         if samples.len() < 4 {
-            return Err(SdkError::InvalidArgument("golden C-UAS model requires at least four training samples".into()));
+            return Err(SdkError::InvalidArgument(
+                "golden C-UAS model requires at least four training samples".into(),
+            ));
         }
-        if !samples.iter().any(|sample| sample.detected) || !samples.iter().any(|sample| !sample.detected) {
-            return Err(SdkError::InvalidArgument("golden C-UAS detector requires positive and negative examples".into()));
+        if !samples.iter().any(|sample| sample.detected)
+            || !samples.iter().any(|sample| !sample.detected)
+        {
+            return Err(SdkError::InvalidArgument(
+                "golden C-UAS detector requires positive and negative examples".into(),
+            ));
         }
         let adapter = ReferenceCuasFeatureAdapter;
-        let encoder = HashProjectionEncoder::new(adapter.feature_dim(), DEFAULT_EMBEDDING_DIM, seed)?;
+        let encoder =
+            HashProjectionEncoder::new(adapter.feature_dim(), DEFAULT_EMBEDDING_DIM, seed)?;
         let mut detector_features = Vec::with_capacity(samples.len());
         let mut detector_labels = Vec::with_capacity(samples.len());
         let mut classifier_samples = Vec::with_capacity(samples.len());
@@ -159,12 +218,19 @@ impl GoldenCuasModel {
             classifier_samples.push((embedding.clone(), sample.class_label.clone()));
             localizer_samples.push((embedding, sample.position));
         }
-        let detector = BinaryLogisticDetector::fit(&detector_features, &detector_labels, 800, 0.05, 1e-4)?;
+        let detector =
+            BinaryLogisticDetector::fit(&detector_features, &detector_labels, 800, 0.05, 1e-4)?;
         let classifier = PrototypeClassifier::fit(&classifier_samples)?;
         let localizer = LinearLocalizer::fit(&localizer_samples, 600, 0.001, 1e-5)?;
-        let pipeline = PerceptionPipeline::new(Arc::new(encoder), Arc::new(detector), Arc::new(classifier), 0.30)?
-            .with_localizer(Arc::new(localizer))?;
-        let correlator = CooperativeCorrelator::new(CorrelationPolicy::new(300.0, 5_000, 80.0, 0.45)?)?;
+        let pipeline = PerceptionPipeline::new(
+            Arc::new(encoder),
+            Arc::new(detector),
+            Arc::new(classifier),
+            0.30,
+        )?
+        .with_localizer(Arc::new(localizer))?;
+        let correlator =
+            CooperativeCorrelator::new(CorrelationPolicy::new(300.0, 5_000, 80.0, 0.45)?)?;
         let training_bytes = serde_json::to_vec(samples)?;
         let model_digest = Digest32::from_bytes(&training_bytes);
         let base_context = VerificationContext::new(
@@ -187,7 +253,9 @@ impl GoldenCuasModel {
         })
     }
 
-    pub fn adapter(&self) -> ReferenceCuasFeatureAdapter { self.adapter }
+    pub fn adapter(&self) -> ReferenceCuasFeatureAdapter {
+        self.adapter
+    }
 
     pub fn with_degarbler(mut self, degarbler: Arc<dyn DegarblingModel>) -> Self {
         self.degarbler = Some(degarbler);
@@ -197,7 +265,10 @@ impl GoldenCuasModel {
     pub fn infer(&self, scenario: &GoldenCuasScenario) -> Result<GoldenCuasReport> {
         scenario.validate()?;
         let (observation, context) = match scenario.source() {
-            GoldenCuasSource::Recorded { frame } => (self.adapter.to_observation(frame)?, self.base_context.clone()),
+            GoldenCuasSource::Recorded { frame } => (
+                self.adapter.to_observation(frame)?,
+                self.base_context.clone(),
+            ),
             GoldenCuasSource::IsacRecorded { input } => input.materialize(
                 self.model_digest,
                 ONTOLOGY_VERSION,
@@ -217,13 +288,24 @@ impl GoldenCuasModel {
         )?;
         let mut reports = Vec::with_capacity(enhanced.components().len());
         for component in enhanced.components() {
-            let source_observation = enhanced.separation().components().get(component.source_component_index())
-                .ok_or_else(|| SdkError::InvalidArgument("enhanced perception component index is out of range".into()))?;
+            let source_observation = enhanced
+                .separation()
+                .components()
+                .get(component.source_component_index())
+                .ok_or_else(|| {
+                    SdkError::InvalidArgument(
+                        "enhanced perception component index is out of range".into(),
+                    )
+                })?;
             let perception = component.perception();
-            let top = perception.classification.first()
-                .ok_or_else(|| SdkError::InvalidArgument("golden C-UAS result has no class score".into()))?;
+            let top = perception.classification.first().ok_or_else(|| {
+                SdkError::InvalidArgument("golden C-UAS result has no class score".into())
+            })?;
             let mut ontology = semantic_graph_for_perception(source_observation, perception)?;
-            augment_graph_with_cooperative_correlations(&mut ontology, component.cooperative_correlations())?;
+            augment_graph_with_cooperative_correlations(
+                &mut ontology,
+                component.cooperative_correlations(),
+            )?;
             let consistency = ontology.validate_reference_schema();
             let certificate = DeterministicVerifier::verify_perception(
                 source_observation,
@@ -255,9 +337,15 @@ impl GoldenCuasModel {
         })
     }
 
-    pub fn replay(&self, scenario: &GoldenCuasScenario, original: &GoldenCuasReport) -> Result<(GoldenCuasReport, ReplayStatus)> {
+    pub fn replay(
+        &self,
+        scenario: &GoldenCuasScenario,
+        original: &GoldenCuasReport,
+    ) -> Result<(GoldenCuasReport, ReplayStatus)> {
         let replayed = self.infer(scenario)?;
-        if original.components.len() != replayed.components.len() || original.evidence_digest_sha256 != replayed.evidence_digest_sha256 {
+        if original.components.len() != replayed.components.len()
+            || original.evidence_digest_sha256 != replayed.evidence_digest_sha256
+        {
             return Ok((replayed, ReplayStatus::NonReproducible));
         }
         let mut overall = ReplayStatus::Exact;
@@ -265,7 +353,9 @@ impl GoldenCuasModel {
             match DeterministicVerifier::compare_replay(left.certificate(), right.certificate()) {
                 ReplayStatus::Exact => {}
                 ReplayStatus::DecisionEquivalent => {
-                    if overall == ReplayStatus::Exact { overall = ReplayStatus::DecisionEquivalent; }
+                    if overall == ReplayStatus::Exact {
+                        overall = ReplayStatus::DecisionEquivalent;
+                    }
                 }
                 ReplayStatus::NonReproducible => {
                     overall = ReplayStatus::NonReproducible;
@@ -277,18 +367,26 @@ impl GoldenCuasModel {
     }
 
     pub fn evaluate(&self, scenarios: &[GoldenCuasScenario]) -> Result<GoldenCuasEvaluation> {
-        if scenarios.is_empty() { return Err(SdkError::EmptyDataset); }
+        if scenarios.is_empty() {
+            return Err(SdkError::EmptyDataset);
+        }
         let mut correct = 0_usize;
         let mut accepted = 0_usize;
         let mut exact_replays = 0_usize;
         for scenario in scenarios {
             let report = self.infer(scenario)?;
-            if report.correct() == Some(true) { correct = correct.saturating_add(1); }
-            if report.components.first().is_some_and(|component| component.verification_decision == VerificationDecision::Accept) {
+            if report.correct() == Some(true) {
+                correct = correct.saturating_add(1);
+            }
+            if report.components.first().is_some_and(|component| {
+                component.verification_decision == VerificationDecision::Accept
+            }) {
                 accepted = accepted.saturating_add(1);
             }
             let (_, replay) = self.replay(scenario, &report)?;
-            if replay == ReplayStatus::Exact { exact_replays = exact_replays.saturating_add(1); }
+            if replay == ReplayStatus::Exact {
+                exact_replays = exact_replays.saturating_add(1);
+            }
         }
         let count = scenarios.len() as f32;
         Ok(GoldenCuasEvaluation {
@@ -308,10 +406,18 @@ pub fn load_golden_cuas_training(path: impl AsRef<Path>) -> Result<GoldenCuasTra
     let bytes = read_bounded(path.as_ref(), MAX_GOLDEN_FILE_BYTES)?;
     let file: GoldenCuasTrainingFile = serde_json::from_slice(&bytes)?;
     if file.samples.len() > 65_536 {
-        return Err(SdkError::DimensionLimit { actual: file.samples.len(), max: 65_536 });
+        return Err(SdkError::DimensionLimit {
+            actual: file.samples.len(),
+            max: 65_536,
+        });
     }
     for sample in &file.samples {
-        GoldenCuasTrainingSample::new(sample.frame.clone(), sample.detected, sample.class_label.clone(), sample.position)?;
+        GoldenCuasTrainingSample::new(
+            sample.frame.clone(),
+            sample.detected,
+            sample.class_label.clone(),
+            sample.position,
+        )?;
     }
     Ok(file)
 }
@@ -326,22 +432,34 @@ pub fn load_golden_cuas_scenario(path: impl AsRef<Path>) -> Result<GoldenCuasSce
 pub fn load_golden_cuas_scenarios(path: impl AsRef<Path>) -> Result<GoldenCuasScenarioSet> {
     let bytes = read_bounded(path.as_ref(), MAX_GOLDEN_FILE_BYTES)?;
     let set: GoldenCuasScenarioSet = serde_json::from_slice(&bytes)?;
-    if set.scenarios.is_empty() { return Err(SdkError::EmptyDataset); }
-    if set.scenarios.len() > 65_536 {
-        return Err(SdkError::DimensionLimit { actual: set.scenarios.len(), max: 65_536 });
+    if set.scenarios.is_empty() {
+        return Err(SdkError::EmptyDataset);
     }
-    for scenario in &set.scenarios { scenario.validate()?; }
+    if set.scenarios.len() > 65_536 {
+        return Err(SdkError::DimensionLimit {
+            actual: set.scenarios.len(),
+            max: 65_536,
+        });
+    }
+    for scenario in &set.scenarios {
+        scenario.validate()?;
+    }
     Ok(set)
 }
 
 fn read_bounded(path: &Path, max_bytes: usize) -> Result<Vec<u8>> {
     let file = File::open(path)?;
-    let limit = u64::try_from(max_bytes).unwrap_or(u64::MAX).saturating_add(1);
+    let limit = u64::try_from(max_bytes)
+        .unwrap_or(u64::MAX)
+        .saturating_add(1);
     let mut reader = file.take(limit);
     let mut bytes = Vec::with_capacity(max_bytes.min(1024 * 1024));
     reader.read_to_end(&mut bytes)?;
     if bytes.len() > max_bytes {
-        return Err(SdkError::ArtifactTooLarge { actual: bytes.len(), max: max_bytes });
+        return Err(SdkError::ArtifactTooLarge {
+            actual: bytes.len(),
+            max: max_bytes,
+        });
     }
     Ok(bytes)
 }

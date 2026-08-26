@@ -1,10 +1,13 @@
 use anderion_cuas_ml::{
-    AutoregressiveTrajectoryPredictor, Embedding, FederatedAverager, FederatedDelta,
-    GraphEdge, GraphMessagePasser, MultimodalTransformerEncoder, Position3, TrajectorySample,
+    AutoregressiveTrajectoryPredictor, Embedding, FederatedAverager, FederatedDelta, GraphEdge,
+    GraphMessagePasser, MultimodalTransformerEncoder, Position3, TrajectorySample,
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let nodes = vec![Embedding::new(vec![1.0, 0.0])?, Embedding::new(vec![0.0, 1.0])?];
+    let nodes = vec![
+        Embedding::new(vec![1.0, 0.0])?,
+        Embedding::new(vec![0.0, 1.0])?,
+    ];
     let edges = vec![GraphEdge::new(0, 1, 1.0)?, GraphEdge::new(1, 0, 1.0)?];
     let graph = GraphMessagePasser::new(0.6, 0.4)?;
     let propagated = graph.propagate(&nodes, &edges)?;

@@ -33,9 +33,13 @@ pub enum SdkError {
 }
 
 impl From<std::io::Error> for SdkError {
-    fn from(value: std::io::Error) -> Self { Self::Io(value.to_string()) }
+    fn from(value: std::io::Error) -> Self {
+        Self::Io(value.to_string())
+    }
 }
 
 impl From<serde_json::Error> for SdkError {
-    fn from(value: serde_json::Error) -> Self { Self::Serialization(value.to_string()) }
+    fn from(value: serde_json::Error) -> Self {
+        Self::Serialization(value.to_string())
+    }
 }

@@ -7,18 +7,35 @@ pub(crate) fn fit_logistic(
     learning_rate: f32,
     l2: f32,
 ) -> Result<(Vec<f32>, f32)> {
-    if samples.is_empty() { return Err(SdkError::EmptyDataset); }
-    if samples.len() != labels.len() {
-        return Err(SdkError::DimensionMismatch { expected: samples.len(), actual: labels.len() });
+    if samples.is_empty() {
+        return Err(SdkError::EmptyDataset);
     }
-    if epochs == 0 || !learning_rate.is_finite() || learning_rate <= 0.0 || !l2.is_finite() || l2 < 0.0 {
-        return Err(SdkError::InvalidArgument("invalid logistic training hyperparameters".into()));
+    if samples.len() != labels.len() {
+        return Err(SdkError::DimensionMismatch {
+            expected: samples.len(),
+            actual: labels.len(),
+        });
+    }
+    if epochs == 0
+        || !learning_rate.is_finite()
+        || learning_rate <= 0.0
+        || !l2.is_finite()
+        || l2 < 0.0
+    {
+        return Err(SdkError::InvalidArgument(
+            "invalid logistic training hyperparameters".into(),
+        ));
     }
     let dim = samples[0].len();
-    if dim == 0 { return Err(SdkError::EmptyFeatures); }
+    if dim == 0 {
+        return Err(SdkError::EmptyFeatures);
+    }
     for sample in samples {
         if sample.len() != dim {
-            return Err(SdkError::DimensionMismatch { expected: dim, actual: sample.len() });
+            return Err(SdkError::DimensionMismatch {
+                expected: dim,
+                actual: sample.len(),
+            });
         }
         if let Some((index, _)) = sample.iter().enumerate().find(|(_, v)| !v.is_finite()) {
             return Err(SdkError::NonFiniteValue { index });
@@ -35,7 +52,9 @@ pub(crate) fn fit_logistic(
             let y = if *label { 1.0 } else { 0.0 };
             let error = p - y;
             grad_b += error;
-            for (g, x) in grad_w.iter_mut().zip(sample) { *g += error * *x; }
+            for (g, x) in grad_w.iter_mut().zip(sample) {
+                *g += error * *x;
+            }
         }
         bias -= learning_rate * (grad_b / n);
         for (w, g) in weights.iter_mut().zip(grad_w) {
@@ -47,17 +66,27 @@ pub(crate) fn fit_logistic(
 
 pub(crate) fn predict_logistic(weights: &[f32], bias: f32, features: &[f32]) -> Result<f32> {
     if weights.len() != features.len() {
-        return Err(SdkError::DimensionMismatch { expected: weights.len(), actual: features.len() });
+        return Err(SdkError::DimensionMismatch {
+            expected: weights.len(),
+            actual: features.len(),
+        });
     }
     Ok(sigmoid(dot(weights, features)? + bias))
 }
 
 pub(crate) fn dot(a: &[f32], b: &[f32]) -> Result<f32> {
     if a.len() != b.len() {
-        return Err(SdkError::DimensionMismatch { expected: a.len(), actual: b.len() });
+        return Err(SdkError::DimensionMismatch {
+            expected: a.len(),
+            actual: b.len(),
+        });
     }
     let value: f32 = a.iter().zip(b).map(|(x, y)| x * y).sum();
-    if !value.is_finite() { return Err(SdkError::InvalidArgument("dot product became non-finite".into())); }
+    if !value.is_finite() {
+        return Err(SdkError::InvalidArgument(
+            "dot product became non-finite".into(),
+        ));
+    }
     Ok(value)
 }
 

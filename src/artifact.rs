@@ -27,9 +27,17 @@ impl ArtifactManifest {
         let model_id = model_id.into();
         let model_type = model_type.into();
         if model_id.trim().is_empty() || model_type.trim().is_empty() {
-            return Err(SdkError::InvalidArgument("model identifiers must be non-empty".into()));
+            return Err(SdkError::InvalidArgument(
+                "model identifiers must be non-empty".into(),
+            ));
         }
-        Ok(Self { schema_version, model_id, model_type, payload_len: payload.len(), payload_sha256: sha256_hex(payload) })
+        Ok(Self {
+            schema_version,
+            model_id,
+            model_type,
+            payload_len: payload.len(),
+            payload_sha256: sha256_hex(payload),
+        })
     }
 }
 
@@ -50,20 +58,42 @@ impl Default for ArtifactPolicy {
     }
 }
 
-pub fn verify_payload(manifest: &ArtifactManifest, payload: &[u8], policy: &ArtifactPolicy) -> Result<()> {
+pub fn verify_payload(
+    manifest: &ArtifactManifest,
+    payload: &[u8],
+    policy: &ArtifactPolicy,
+) -> Result<()> {
     if manifest.schema_version != policy.expected_schema_version {
-        return Err(SdkError::SchemaMismatch { expected: policy.expected_schema_version, actual: manifest.schema_version });
+        return Err(SdkError::SchemaMismatch {
+            expected: policy.expected_schema_version,
+            actual: manifest.schema_version,
+        });
     }
     if payload.len() > policy.max_payload_bytes {
-        return Err(SdkError::ArtifactTooLarge { actual: payload.len(), max: policy.max_payload_bytes });
+        return Err(SdkError::ArtifactTooLarge {
+            actual: payload.len(),
+            max: policy.max_payload_bytes,
+        });
     }
     if payload.len() != manifest.payload_len {
-        return Err(SdkError::PayloadLengthMismatch { expected: manifest.payload_len, actual: payload.len() });
+        return Err(SdkError::PayloadLengthMismatch {
+            expected: manifest.payload_len,
+            actual: payload.len(),
+        });
     }
-    if !policy.allowed_model_types.iter().any(|item| item == &manifest.model_type) {
-        return Err(SdkError::InvalidArgument(format!("model type '{}' is not allowed", manifest.model_type)));
+    if !policy
+        .allowed_model_types
+        .iter()
+        .any(|item| item == &manifest.model_type)
+    {
+        return Err(SdkError::InvalidArgument(format!(
+            "model type '{}' is not allowed",
+            manifest.model_type
+        )));
     }
-    if sha256_hex(payload) != manifest.payload_sha256.to_ascii_lowercase() { return Err(SdkError::DigestMismatch); }
+    if sha256_hex(payload) != manifest.payload_sha256.to_ascii_lowercase() {
+        return Err(SdkError::DigestMismatch);
+    }
     Ok(())
 }
 
@@ -81,12 +111,17 @@ pub fn load_verified_payload(
 
 fn read_bounded(path: &Path, max_bytes: usize) -> Result<Vec<u8>> {
     let file = File::open(path)?;
-    let limit = u64::try_from(max_bytes).unwrap_or(u64::MAX).saturating_add(1);
+    let limit = u64::try_from(max_bytes)
+        .unwrap_or(u64::MAX)
+        .saturating_add(1);
     let mut reader = file.take(limit);
     let mut bytes = Vec::with_capacity(max_bytes.min(1024 * 1024));
     reader.read_to_end(&mut bytes)?;
     if bytes.len() > max_bytes {
-        return Err(SdkError::ArtifactTooLarge { actual: bytes.len(), max: max_bytes });
+        return Err(SdkError::ArtifactTooLarge {
+            actual: bytes.len(),
+            max: max_bytes,
+        });
     }
     Ok(bytes)
 }
@@ -94,6 +129,8 @@ fn read_bounded(path: &Path, max_bytes: usize) -> Result<Vec<u8>> {
 fn sha256_hex(bytes: &[u8]) -> String {
     let digest = Sha256::digest(bytes);
     let mut out = String::with_capacity(64);
-    for byte in digest { out.push_str(&format!("{byte:02x}")); }
+    for byte in digest {
+        out.push_str(&format!("{byte:02x}"));
+    }
     out
 }

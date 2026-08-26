@@ -51,7 +51,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (_, replay) = model.replay(&scenario_file, &report)?;
     let evaluation_report = model.evaluate(&evaluation_file.scenarios)?;
 
-    if let Some(parent) = output.parent().filter(|value| !value.as_os_str().is_empty()) {
+    if let Some(parent) = output
+        .parent()
+        .filter(|value| !value.as_os_str().is_empty())
+    {
         fs::create_dir_all(parent)?;
     }
     let document = GoldenDemoOutput {
@@ -67,21 +70,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("  scenario: {}", document.report.scenario_name());
     if let Some(value) = component {
         println!("  detected: {}", value.detected());
-        println!("  classification: {} ({:.1}%)", value.predicted_label(), value.probability() * 100.0);
-        println!("  cooperative matches: {}", value.cooperative_correlations().len());
+        println!(
+            "  classification: {} ({:.1}%)",
+            value.predicted_label(),
+            value.probability() * 100.0
+        );
+        println!(
+            "  cooperative matches: {}",
+            value.cooperative_correlations().len()
+        );
         println!("  verification: {:?}", value.verification_decision());
     }
     println!("  replay: {:?}", document.replay);
-    println!("  fixture accuracy: {:.1}%", document.evaluation.accuracy * 100.0);
+    println!(
+        "  fixture accuracy: {:.1}%",
+        document.evaluation.accuracy * 100.0
+    );
     println!("  result: {}", output.display());
     println!("  NOTE: fixture/recorded metrics are pipeline validation, not field performance.");
     Ok(())
 }
 
-fn next_arg(args: &mut impl Iterator<Item = String>, flag: &str) -> Result<String, Box<dyn std::error::Error>> {
-    args.next().ok_or_else(|| format!("missing value for {flag}").into())
+fn next_arg(
+    args: &mut impl Iterator<Item = String>,
+    flag: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
+    args.next()
+        .ok_or_else(|| format!("missing value for {flag}").into())
 }
 
 fn print_help() {
-    println!("cuas-golden-demo [--training PATH] [--scenario PATH] [--evaluation PATH] [--output PATH] [--seed N]");
+    println!(
+        "cuas-golden-demo [--training PATH] [--scenario PATH] [--evaluation PATH] [--output PATH] [--seed N]"
+    );
 }

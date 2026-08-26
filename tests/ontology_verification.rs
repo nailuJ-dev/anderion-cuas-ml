@@ -12,7 +12,8 @@ fn reference_pipeline() -> Result<PerceptionPipeline> {
     let encoder = HashProjectionEncoder::new(2, 2, 11)?;
     let a = encoder.encode_features(&[1.0, 0.0])?;
     let b = encoder.encode_features(&[0.0, 1.0])?;
-    let classifier = PrototypeClassifier::fit(&[(a.clone(), "drone".into()), (b.clone(), "other".into())])?;
+    let classifier =
+        PrototypeClassifier::fit(&[(a.clone(), "drone".into()), (b.clone(), "other".into())])?;
     let detector = BinaryLogisticDetector::fit(
         &[a.values().to_vec(), b.values().to_vec()],
         &[true, false],
@@ -20,7 +21,12 @@ fn reference_pipeline() -> Result<PerceptionPipeline> {
         0.1,
         0.001,
     )?;
-    PerceptionPipeline::new(Arc::new(encoder), Arc::new(detector), Arc::new(classifier), 0.15)
+    PerceptionPipeline::new(
+        Arc::new(encoder),
+        Arc::new(detector),
+        Arc::new(classifier),
+        0.15,
+    )
 }
 
 fn context() -> Result<VerificationContext> {
@@ -36,11 +42,31 @@ fn context() -> Result<VerificationContext> {
 #[test]
 fn ontology_detects_conflicting_candidate_classes_deterministically() -> Result<()> {
     let mut graph = OntologyGraph::new("cuas-ontology-v1")?;
-    graph.add_node(OntologyNode::new("candidate:1", ConceptKind::Candidate, None)?)?;
-    graph.add_node(OntologyNode::new("class:a", ConceptKind::ObjectClass, Some("drone".into()))?)?;
-    graph.add_node(OntologyNode::new("class:b", ConceptKind::ObjectClass, Some("bird".into()))?)?;
-    graph.add_relation(OntologyRelation::new("candidate:1", RelationKind::ClassifiedAs, "class:a")?)?;
-    graph.add_relation(OntologyRelation::new("candidate:1", RelationKind::ClassifiedAs, "class:b")?)?;
+    graph.add_node(OntologyNode::new(
+        "candidate:1",
+        ConceptKind::Candidate,
+        None,
+    )?)?;
+    graph.add_node(OntologyNode::new(
+        "class:a",
+        ConceptKind::ObjectClass,
+        Some("drone".into()),
+    )?)?;
+    graph.add_node(OntologyNode::new(
+        "class:b",
+        ConceptKind::ObjectClass,
+        Some("bird".into()),
+    )?)?;
+    graph.add_relation(OntologyRelation::new(
+        "candidate:1",
+        RelationKind::ClassifiedAs,
+        "class:a",
+    )?)?;
+    graph.add_relation(OntologyRelation::new(
+        "candidate:1",
+        RelationKind::ClassifiedAs,
+        "class:b",
+    )?)?;
 
     let first = graph.validate_reference_schema();
     let second = graph.validate_reference_schema();
@@ -52,7 +78,11 @@ fn ontology_detects_conflicting_candidate_classes_deterministically() -> Result<
 
 #[test]
 fn recurring_behaviour_patterns_are_deterministic() -> Result<()> {
-    let approach = PatternToken::new(ConceptKind::BehaviourPattern, "approach", Some("cluster-1".into()))?;
+    let approach = PatternToken::new(
+        ConceptKind::BehaviourPattern,
+        "approach",
+        Some("cluster-1".into()),
+    )?;
     let hover = PatternToken::new(ConceptKind::BehaviourPattern, "hover", None)?;
     let events = vec![
         PatternEvent::new(400, hover.clone()),
@@ -74,8 +104,10 @@ fn recurring_behaviour_patterns_are_deterministic() -> Result<()> {
 #[test]
 fn verified_perception_pipeline_replays_exactly() -> Result<()> {
     let policy = PerceptionVerificationPolicy::new(0.2, 0.98, 0.98, 0.1, 1_000_000, true)?;
-    let verified_pipeline = VerifiedPerceptionPipeline::new(reference_pipeline()?, context()?, policy);
-    let observation = anderion_cuas_ml::Observation::new("obs-1", "sensor-a", 1_234, vec![1.0, 0.0])?;
+    let verified_pipeline =
+        VerifiedPerceptionPipeline::new(reference_pipeline()?, context()?, policy);
+    let observation =
+        anderion_cuas_ml::Observation::new("obs-1", "sensor-a", 1_234, vec![1.0, 0.0])?;
 
     let first = verified_pipeline.infer(&observation)?;
     let second = verified_pipeline.infer(&observation)?;
@@ -90,9 +122,11 @@ fn verified_perception_pipeline_replays_exactly() -> Result<()> {
 #[test]
 fn semantic_contradiction_forces_review() -> Result<()> {
     let pipeline = reference_pipeline()?;
-    let observation = anderion_cuas_ml::Observation::new("obs-2", "sensor-a", 2_000, vec![0.0, 1.0])?;
+    let observation =
+        anderion_cuas_ml::Observation::new("obs-2", "sensor-a", 2_000, vec![0.0, 1.0])?;
     let result = pipeline.infer(&observation)?;
-    let report = ConsistencyReport::from_violation("cardinality", "conflicting semantic assertions")?;
+    let report =
+        ConsistencyReport::from_violation("cardinality", "conflicting semantic assertions")?;
     let policy = PerceptionVerificationPolicy::new(0.2, 0.98, 0.98, 0.1, 1_000_000, true)?;
     let certificate = DeterministicVerifier::verify_perception(
         &observation,
@@ -101,15 +135,20 @@ fn semantic_contradiction_forces_review() -> Result<()> {
         &policy,
         &report,
     )?;
-    assert_eq!(certificate.decision(), anderion_cuas_ml::VerificationDecision::Review);
+    assert_eq!(
+        certificate.decision(),
+        anderion_cuas_ml::VerificationDecision::Review
+    );
     Ok(())
 }
 
 #[test]
 fn replay_detects_model_context_drift() -> Result<()> {
     let policy = PerceptionVerificationPolicy::new(0.2, 0.98, 0.98, 0.1, 1_000_000, true)?;
-    let observation = anderion_cuas_ml::Observation::new("obs-3", "sensor-a", 3_000, vec![1.0, 0.0])?;
-    let first_pipeline = VerifiedPerceptionPipeline::new(reference_pipeline()?, context()?, policy.clone());
+    let observation =
+        anderion_cuas_ml::Observation::new("obs-3", "sensor-a", 3_000, vec![1.0, 0.0])?;
+    let first_pipeline =
+        VerifiedPerceptionPipeline::new(reference_pipeline()?, context()?, policy.clone());
     let first = first_pipeline.infer(&observation)?;
     let changed_context = VerificationContext::new(
         Digest32::from_bytes(b"reference-model-v2"),
@@ -118,7 +157,8 @@ fn replay_detects_model_context_drift() -> Result<()> {
         "perception-v1",
         11,
     )?;
-    let second_pipeline = VerifiedPerceptionPipeline::new(reference_pipeline()?, changed_context, policy);
+    let second_pipeline =
+        VerifiedPerceptionPipeline::new(reference_pipeline()?, changed_context, policy);
     let second = second_pipeline.infer(&observation)?;
     assert_eq!(
         DeterministicVerifier::compare_replay(first.certificate(), second.certificate()),

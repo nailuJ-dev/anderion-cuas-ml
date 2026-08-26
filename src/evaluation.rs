@@ -13,9 +13,19 @@ pub struct ClassificationMetrics {
     pub confusion: BTreeMap<String, BTreeMap<String, u64>>,
 }
 
-pub fn classification_metrics<T: AsRef<str>>(truth: &[T], predicted: &[T]) -> Result<ClassificationMetrics> {
-    if truth.is_empty() { return Err(SdkError::EmptyDataset); }
-    if truth.len() != predicted.len() { return Err(SdkError::DimensionMismatch { expected: truth.len(), actual: predicted.len() }); }
+pub fn classification_metrics<T: AsRef<str>>(
+    truth: &[T],
+    predicted: &[T],
+) -> Result<ClassificationMetrics> {
+    if truth.is_empty() {
+        return Err(SdkError::EmptyDataset);
+    }
+    if truth.len() != predicted.len() {
+        return Err(SdkError::DimensionMismatch {
+            expected: truth.len(),
+            actual: predicted.len(),
+        });
+    }
     let mut labels = BTreeSet::new();
     let mut confusion: BTreeMap<String, BTreeMap<String, u64>> = BTreeMap::new();
     let mut correct = 0_u64;
@@ -24,20 +34,45 @@ pub fn classification_metrics<T: AsRef<str>>(truth: &[T], predicted: &[T]) -> Re
         let predicted = predicted.as_ref().to_string();
         labels.insert(actual.clone());
         labels.insert(predicted.clone());
-        if actual == predicted { correct += 1; }
-        *confusion.entry(actual).or_default().entry(predicted).or_insert(0) += 1;
+        if actual == predicted {
+            correct += 1;
+        }
+        *confusion
+            .entry(actual)
+            .or_default()
+            .entry(predicted)
+            .or_insert(0) += 1;
     }
     let mut precision_sum = 0.0;
     let mut recall_sum = 0.0;
     let mut f1_sum = 0.0;
     for label in &labels {
-        let tp = confusion.get(label).and_then(|row| row.get(label)).copied().unwrap_or(0) as f32;
-        let fp = confusion.iter().filter(|(actual, _)| *actual != label)
-            .map(|(_, row)| row.get(label).copied().unwrap_or(0)).sum::<u64>() as f32;
-        let fn_ = confusion.get(label).map(|row| row.iter().filter(|(predicted, _)| *predicted != label).map(|(_, n)| *n).sum::<u64>()).unwrap_or(0) as f32;
+        let tp = confusion
+            .get(label)
+            .and_then(|row| row.get(label))
+            .copied()
+            .unwrap_or(0) as f32;
+        let fp = confusion
+            .iter()
+            .filter(|(actual, _)| *actual != label)
+            .map(|(_, row)| row.get(label).copied().unwrap_or(0))
+            .sum::<u64>() as f32;
+        let fn_ = confusion
+            .get(label)
+            .map(|row| {
+                row.iter()
+                    .filter(|(predicted, _)| *predicted != label)
+                    .map(|(_, n)| *n)
+                    .sum::<u64>()
+            })
+            .unwrap_or(0) as f32;
         let precision = if tp + fp > 0.0 { tp / (tp + fp) } else { 0.0 };
         let recall = if tp + fn_ > 0.0 { tp / (tp + fn_) } else { 0.0 };
-        let f1 = if precision + recall > 0.0 { 2.0 * precision * recall / (precision + recall) } else { 0.0 };
+        let f1 = if precision + recall > 0.0 {
+            2.0 * precision * recall / (precision + recall)
+        } else {
+            0.0
+        };
         precision_sum += precision;
         recall_sum += recall;
         f1_sum += f1;

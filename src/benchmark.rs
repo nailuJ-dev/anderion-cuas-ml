@@ -11,7 +11,12 @@ pub struct BenchmarkConfig {
 }
 
 impl Default for BenchmarkConfig {
-    fn default() -> Self { Self { warmup_runs: 2, measured_runs: 10 } }
+    fn default() -> Self {
+        Self {
+            warmup_runs: 2,
+            measured_runs: 10,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -22,17 +27,40 @@ pub struct BenchmarkReport {
     pub throughput_per_second: f64,
 }
 
-pub fn benchmark_pipeline(pipeline: &PerceptionPipeline, observations: &[Observation], config: BenchmarkConfig) -> Result<BenchmarkReport> {
-    if observations.is_empty() { return Err(SdkError::EmptyDataset); }
-    if config.measured_runs == 0 { return Err(SdkError::InvalidArgument("measured_runs must be positive".into())); }
-    for _ in 0..config.warmup_runs { pipeline.infer_batch(observations)?; }
+pub fn benchmark_pipeline(
+    pipeline: &PerceptionPipeline,
+    observations: &[Observation],
+    config: BenchmarkConfig,
+) -> Result<BenchmarkReport> {
+    if observations.is_empty() {
+        return Err(SdkError::EmptyDataset);
+    }
+    if config.measured_runs == 0 {
+        return Err(SdkError::InvalidArgument(
+            "measured_runs must be positive".into(),
+        ));
+    }
+    for _ in 0..config.warmup_runs {
+        pipeline.infer_batch(observations)?;
+    }
     let start = Instant::now();
-    for _ in 0..config.measured_runs { pipeline.infer_batch(observations)?; }
+    for _ in 0..config.measured_runs {
+        pipeline.infer_batch(observations)?;
+    }
     let elapsed = start.elapsed();
     let inferences = observations.len().saturating_mul(config.measured_runs);
     let elapsed_micros = elapsed.as_micros();
     let mean_micros_per_inference = elapsed_micros as f64 / inferences as f64;
     let seconds = elapsed.as_secs_f64();
-    let throughput_per_second = if seconds > 0.0 { inferences as f64 / seconds } else { f64::INFINITY };
-    Ok(BenchmarkReport { inferences, elapsed_micros, mean_micros_per_inference, throughput_per_second })
+    let throughput_per_second = if seconds > 0.0 {
+        inferences as f64 / seconds
+    } else {
+        f64::INFINITY
+    };
+    Ok(BenchmarkReport {
+        inferences,
+        elapsed_micros,
+        mean_micros_per_inference,
+        throughput_per_second,
+    })
 }

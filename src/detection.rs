@@ -19,14 +19,24 @@ impl BinaryLogisticDetector {
         l2: f32,
     ) -> Result<Self> {
         let (weights, bias) = fit_logistic(samples, labels, epochs, learning_rate, l2)?;
-        Ok(Self { weights, bias, threshold: 0.5 })
+        Ok(Self {
+            weights,
+            bias,
+            threshold: 0.5,
+        })
     }
 
     pub fn validate(&self) -> Result<()> {
-        if self.weights.is_empty() || self.weights.len() > 8_192 || self.weights.iter().any(|v| !v.is_finite()) || !self.bias.is_finite() {
+        if self.weights.is_empty()
+            || self.weights.len() > 8_192
+            || self.weights.iter().any(|v| !v.is_finite())
+            || !self.bias.is_finite()
+        {
             return Err(SdkError::InvalidArgument("invalid detector payload".into()));
         }
-        if !self.threshold.is_finite() || !(0.0..=1.0).contains(&self.threshold) { return Err(SdkError::InvalidProbability(self.threshold)); }
+        if !self.threshold.is_finite() || !(0.0..=1.0).contains(&self.threshold) {
+            return Err(SdkError::InvalidProbability(self.threshold));
+        }
         Ok(())
     }
 
@@ -47,7 +57,9 @@ impl Detector for BinaryLogisticDetector {
     fn detect(&self, embedding: &Embedding) -> Result<Detection> {
         Detection::new(self.probability(embedding)?, self.threshold)
     }
-    fn input_dim(&self) -> usize { self.weights.len() }
+    fn input_dim(&self) -> usize {
+        self.weights.len()
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

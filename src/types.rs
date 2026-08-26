@@ -24,15 +24,30 @@ impl Observation {
         let id = id.into();
         let sensor_id = sensor_id.into();
         if id.trim().is_empty() || sensor_id.trim().is_empty() {
-            return Err(SdkError::InvalidArgument("observation id and sensor_id must be non-empty".into()));
+            return Err(SdkError::InvalidArgument(
+                "observation id and sensor_id must be non-empty".into(),
+            ));
         }
-        Ok(Self { id, sensor_id, timestamp_ms, features })
+        Ok(Self {
+            id,
+            sensor_id,
+            timestamp_ms,
+            features,
+        })
     }
 
-    pub fn id(&self) -> &str { &self.id }
-    pub fn sensor_id(&self) -> &str { &self.sensor_id }
-    pub fn timestamp_ms(&self) -> u64 { self.timestamp_ms }
-    pub fn features(&self) -> &[f32] { &self.features }
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+    pub fn sensor_id(&self) -> &str {
+        &self.sensor_id
+    }
+    pub fn timestamp_ms(&self) -> u64 {
+        self.timestamp_ms
+    }
+    pub fn features(&self) -> &[f32] {
+        &self.features
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -45,8 +60,12 @@ impl Embedding {
         validate_vector(&values, MAX_EMBEDDING_DIM)?;
         Ok(Self { values })
     }
-    pub fn values(&self) -> &[f32] { &self.values }
-    pub fn dim(&self) -> usize { self.values.len() }
+    pub fn values(&self) -> &[f32] {
+        &self.values
+    }
+    pub fn dim(&self) -> usize {
+        self.values.len()
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -59,7 +78,9 @@ pub struct Position3 {
 impl Position3 {
     pub fn new(x: f64, y: f64, z: f64) -> Result<Self> {
         if !x.is_finite() || !y.is_finite() || !z.is_finite() {
-            return Err(SdkError::InvalidArgument("position coordinates must be finite".into()));
+            return Err(SdkError::InvalidArgument(
+                "position coordinates must be finite".into(),
+            ));
         }
         Ok(Self { x, y, z })
     }
@@ -77,7 +98,9 @@ impl ClassScore {
             return Err(SdkError::InvalidProbability(probability));
         }
         let label = label.into();
-        if label.trim().is_empty() { return Err(SdkError::InvalidArgument("label must be non-empty".into())); }
+        if label.trim().is_empty() {
+            return Err(SdkError::InvalidArgument("label must be non-empty".into()));
+        }
         Ok(Self { label, probability })
     }
 }
@@ -97,7 +120,11 @@ impl Detection {
         if !threshold.is_finite() || !(0.0..=1.0).contains(&threshold) {
             return Err(SdkError::InvalidProbability(threshold));
         }
-        Ok(Self { probability, detected: probability >= threshold, uncertainty: 1.0 - (2.0 * (probability - 0.5).abs()).clamp(0.0, 1.0) })
+        Ok(Self {
+            probability,
+            detected: probability >= threshold,
+            uncertainty: 1.0 - (2.0 * (probability - 0.5).abs()).clamp(0.0, 1.0),
+        })
     }
 }
 
@@ -111,12 +138,18 @@ pub struct Localization {
 impl Localization {
     pub fn new(position: Position3, sigma_m: f64, confidence: f32) -> Result<Self> {
         if !sigma_m.is_finite() || sigma_m < 0.0 {
-            return Err(SdkError::InvalidArgument("sigma_m must be finite and non-negative".into()));
+            return Err(SdkError::InvalidArgument(
+                "sigma_m must be finite and non-negative".into(),
+            ));
         }
         if !confidence.is_finite() || !(0.0..=1.0).contains(&confidence) {
             return Err(SdkError::InvalidProbability(confidence));
         }
-        Ok(Self { position, sigma_m, confidence })
+        Ok(Self {
+            position,
+            sigma_m,
+            confidence,
+        })
     }
 }
 
@@ -131,9 +164,20 @@ pub struct Track {
 }
 
 pub(crate) fn validate_vector(values: &[f32], max: usize) -> Result<()> {
-    if values.is_empty() { return Err(SdkError::EmptyFeatures); }
-    if values.len() > max { return Err(SdkError::DimensionLimit { actual: values.len(), max }); }
-    if let Some((index, _)) = values.iter().enumerate().find(|(_, value)| !value.is_finite()) {
+    if values.is_empty() {
+        return Err(SdkError::EmptyFeatures);
+    }
+    if values.len() > max {
+        return Err(SdkError::DimensionLimit {
+            actual: values.len(),
+            max,
+        });
+    }
+    if let Some((index, _)) = values
+        .iter()
+        .enumerate()
+        .find(|(_, value)| !value.is_finite())
+    {
         return Err(SdkError::NonFiniteValue { index });
     }
     Ok(())

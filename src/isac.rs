@@ -3,8 +3,8 @@ use std::collections::{BTreeSet, VecDeque};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest as ShaDigest, Sha256};
 
-use crate::{Digest32, Observation, Result, SdkError, VerificationContext};
 use crate::types::MAX_FEATURES;
+use crate::{Digest32, Observation, Result, SdkError, VerificationContext};
 
 const MAX_TEXT_BYTES: usize = 256;
 const MAX_RECORDED_FRAMES: usize = 1_000_000;
@@ -33,17 +33,32 @@ impl SensingCapabilities {
         let infrastructure_id = infrastructure_id.into();
         validate_text("infrastructure_id", &infrastructure_id)?;
         if modes.is_empty() {
-            return Err(SdkError::InvalidArgument("sensing capabilities must include at least one mode".into()));
+            return Err(SdkError::InvalidArgument(
+                "sensing capabilities must include at least one mode".into(),
+            ));
         }
         if max_feature_dimension == 0 || max_feature_dimension > MAX_FEATURES {
-            return Err(SdkError::DimensionLimit { actual: max_feature_dimension, max: MAX_FEATURES });
+            return Err(SdkError::DimensionLimit {
+                actual: max_feature_dimension,
+                max: MAX_FEATURES,
+            });
         }
-        Ok(Self { infrastructure_id, modes, max_feature_dimension })
+        Ok(Self {
+            infrastructure_id,
+            modes,
+            max_feature_dimension,
+        })
     }
 
-    pub fn infrastructure_id(&self) -> &str { &self.infrastructure_id }
-    pub fn modes(&self) -> &BTreeSet<SensingMode> { &self.modes }
-    pub fn max_feature_dimension(&self) -> usize { self.max_feature_dimension }
+    pub fn infrastructure_id(&self) -> &str {
+        &self.infrastructure_id
+    }
+    pub fn modes(&self) -> &BTreeSet<SensingMode> {
+        &self.modes
+    }
+    pub fn max_feature_dimension(&self) -> usize {
+        self.max_feature_dimension
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -70,17 +85,34 @@ impl OperatorAuthorization {
         validate_text("operator_id", &operator_id)?;
         validate_text("infrastructure_id", &infrastructure_id)?;
         if valid_until_ms < valid_from_ms {
-            return Err(SdkError::InvalidArgument("authorization validity window is inverted".into()));
+            return Err(SdkError::InvalidArgument(
+                "authorization validity window is inverted".into(),
+            ));
         }
         if allowed_modes.is_empty() {
-            return Err(SdkError::InvalidArgument("authorization must allow at least one sensing mode".into()));
+            return Err(SdkError::InvalidArgument(
+                "authorization must allow at least one sensing mode".into(),
+            ));
         }
-        Ok(Self { operator_id, infrastructure_id, valid_from_ms, valid_until_ms, allowed_modes, authorization_digest })
+        Ok(Self {
+            operator_id,
+            infrastructure_id,
+            valid_from_ms,
+            valid_until_ms,
+            allowed_modes,
+            authorization_digest,
+        })
     }
 
-    pub fn operator_id(&self) -> &str { &self.operator_id }
-    pub fn infrastructure_id(&self) -> &str { &self.infrastructure_id }
-    pub fn authorization_digest(&self) -> Digest32 { self.authorization_digest }
+    pub fn operator_id(&self) -> &str {
+        &self.operator_id
+    }
+    pub fn infrastructure_id(&self) -> &str {
+        &self.infrastructure_id
+    }
+    pub fn authorization_digest(&self) -> Digest32 {
+        self.authorization_digest
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -101,15 +133,31 @@ impl SensingRequest {
         let infrastructure_id = infrastructure_id.into();
         validate_text("infrastructure_id", &infrastructure_id)?;
         if feature_dimension == 0 || feature_dimension > MAX_FEATURES {
-            return Err(SdkError::DimensionLimit { actual: feature_dimension, max: MAX_FEATURES });
+            return Err(SdkError::DimensionLimit {
+                actual: feature_dimension,
+                max: MAX_FEATURES,
+            });
         }
-        Ok(Self { infrastructure_id, mode, feature_dimension, configuration_digest })
+        Ok(Self {
+            infrastructure_id,
+            mode,
+            feature_dimension,
+            configuration_digest,
+        })
     }
 
-    pub fn infrastructure_id(&self) -> &str { &self.infrastructure_id }
-    pub fn mode(&self) -> SensingMode { self.mode }
-    pub fn feature_dimension(&self) -> usize { self.feature_dimension }
-    pub fn configuration_digest(&self) -> Digest32 { self.configuration_digest }
+    pub fn infrastructure_id(&self) -> &str {
+        &self.infrastructure_id
+    }
+    pub fn mode(&self) -> SensingMode {
+        self.mode
+    }
+    pub fn feature_dimension(&self) -> usize {
+        self.feature_dimension
+    }
+    pub fn configuration_digest(&self) -> Digest32 {
+        self.configuration_digest
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -125,14 +173,30 @@ pub struct SensingSession {
 }
 
 impl SensingSession {
-    pub fn session_id(&self) -> Digest32 { self.session_id }
-    pub fn infrastructure_id(&self) -> &str { &self.infrastructure_id }
-    pub fn mode(&self) -> SensingMode { self.mode }
-    pub fn feature_dimension(&self) -> usize { self.feature_dimension }
-    pub fn valid_from_ms(&self) -> u64 { self.valid_from_ms }
-    pub fn valid_until_ms(&self) -> u64 { self.valid_until_ms }
-    pub fn authorization_digest(&self) -> Digest32 { self.authorization_digest }
-    pub fn configuration_digest(&self) -> Digest32 { self.configuration_digest }
+    pub fn session_id(&self) -> Digest32 {
+        self.session_id
+    }
+    pub fn infrastructure_id(&self) -> &str {
+        &self.infrastructure_id
+    }
+    pub fn mode(&self) -> SensingMode {
+        self.mode
+    }
+    pub fn feature_dimension(&self) -> usize {
+        self.feature_dimension
+    }
+    pub fn valid_from_ms(&self) -> u64 {
+        self.valid_from_ms
+    }
+    pub fn valid_until_ms(&self) -> u64 {
+        self.valid_until_ms
+    }
+    pub fn authorization_digest(&self) -> Digest32 {
+        self.authorization_digest
+    }
+    pub fn configuration_digest(&self) -> Digest32 {
+        self.configuration_digest
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -153,13 +217,26 @@ impl SensingFrame {
         let infrastructure_id = infrastructure_id.into();
         validate_text("infrastructure_id", &infrastructure_id)?;
         validate_features(&features)?;
-        Ok(Self { timestamp_ms, infrastructure_id, mode, features })
+        Ok(Self {
+            timestamp_ms,
+            infrastructure_id,
+            mode,
+            features,
+        })
     }
 
-    pub fn timestamp_ms(&self) -> u64 { self.timestamp_ms }
-    pub fn infrastructure_id(&self) -> &str { &self.infrastructure_id }
-    pub fn mode(&self) -> SensingMode { self.mode }
-    pub fn features(&self) -> &[f32] { &self.features }
+    pub fn timestamp_ms(&self) -> u64 {
+        self.timestamp_ms
+    }
+    pub fn infrastructure_id(&self) -> &str {
+        &self.infrastructure_id
+    }
+    pub fn mode(&self) -> SensingMode {
+        self.mode
+    }
+    pub fn features(&self) -> &[f32] {
+        &self.features
+    }
 
     pub fn to_observation(&self, id: impl Into<String>) -> Result<Observation> {
         self.validate()?;
@@ -182,11 +259,22 @@ impl SensingFrame {
     ) -> Result<VerificationContext> {
         self.validate()?;
         validate_authorized_request(authorization, request, self.timestamp_ms, None)?;
-        if self.infrastructure_id != request.infrastructure_id || self.mode != request.mode || self.features.len() != request.feature_dimension {
-            return Err(SdkError::InvalidArgument("sensing frame does not match the authorized request".into()));
+        if self.infrastructure_id != request.infrastructure_id
+            || self.mode != request.mode
+            || self.features.len() != request.feature_dimension
+        {
+            return Err(SdkError::InvalidArgument(
+                "sensing frame does not match the authorized request".into(),
+            ));
         }
         let config_digest = combined_configuration_digest(authorization, request, self);
-        VerificationContext::new(model_digest, config_digest, ontology_version, pipeline_version, seed)
+        VerificationContext::new(
+            model_digest,
+            config_digest,
+            ontology_version,
+            pipeline_version,
+            seed,
+        )
     }
 
     fn validate(&self) -> Result<()> {
@@ -197,7 +285,12 @@ impl SensingFrame {
 
 pub trait ActiveSensingProvider: Send {
     fn capabilities(&self) -> &SensingCapabilities;
-    fn prepare(&mut self, authorization: &OperatorAuthorization, request: &SensingRequest, now_ms: u64) -> Result<SensingSession>;
+    fn prepare(
+        &mut self,
+        authorization: &OperatorAuthorization,
+        request: &SensingRequest,
+        now_ms: u64,
+    ) -> Result<SensingSession>;
     fn acquire(&mut self, session: &SensingSession) -> Result<Option<SensingFrame>>;
     fn stop(&mut self, session: SensingSession) -> Result<()>;
 }
@@ -213,32 +306,55 @@ impl RecordedSensingProvider {
     pub fn new(capabilities: SensingCapabilities, frames: Vec<SensingFrame>) -> Result<Self> {
         validate_capabilities(&capabilities)?;
         if frames.len() > MAX_RECORDED_FRAMES {
-            return Err(SdkError::DimensionLimit { actual: frames.len(), max: MAX_RECORDED_FRAMES });
+            return Err(SdkError::DimensionLimit {
+                actual: frames.len(),
+                max: MAX_RECORDED_FRAMES,
+            });
         }
         for frame in &frames {
             frame.validate()?;
             if frame.infrastructure_id != capabilities.infrastructure_id {
-                return Err(SdkError::InvalidArgument("recorded frame infrastructure does not match provider capabilities".into()));
+                return Err(SdkError::InvalidArgument(
+                    "recorded frame infrastructure does not match provider capabilities".into(),
+                ));
             }
             if !capabilities.modes.contains(&frame.mode) {
-                return Err(SdkError::InvalidArgument("recorded frame mode is not supported by provider capabilities".into()));
+                return Err(SdkError::InvalidArgument(
+                    "recorded frame mode is not supported by provider capabilities".into(),
+                ));
             }
             if frame.features.len() > capabilities.max_feature_dimension {
-                return Err(SdkError::DimensionLimit { actual: frame.features.len(), max: capabilities.max_feature_dimension });
+                return Err(SdkError::DimensionLimit {
+                    actual: frame.features.len(),
+                    max: capabilities.max_feature_dimension,
+                });
             }
         }
-        Ok(Self { capabilities, frames: frames.into(), active_session: None })
+        Ok(Self {
+            capabilities,
+            frames: frames.into(),
+            active_session: None,
+        })
     }
 }
 
 impl ActiveSensingProvider for RecordedSensingProvider {
-    fn capabilities(&self) -> &SensingCapabilities { &self.capabilities }
+    fn capabilities(&self) -> &SensingCapabilities {
+        &self.capabilities
+    }
 
-    fn prepare(&mut self, authorization: &OperatorAuthorization, request: &SensingRequest, now_ms: u64) -> Result<SensingSession> {
+    fn prepare(
+        &mut self,
+        authorization: &OperatorAuthorization,
+        request: &SensingRequest,
+        now_ms: u64,
+    ) -> Result<SensingSession> {
         validate_capabilities(&self.capabilities)?;
         validate_authorized_request(authorization, request, now_ms, Some(&self.capabilities))?;
         if self.active_session.is_some() {
-            return Err(SdkError::InvalidArgument("a sensing session is already active".into()));
+            return Err(SdkError::InvalidArgument(
+                "a sensing session is already active".into(),
+            ));
         }
         let session = SensingSession {
             session_id: session_digest(authorization, request, now_ms),
@@ -255,27 +371,47 @@ impl ActiveSensingProvider for RecordedSensingProvider {
     }
 
     fn acquire(&mut self, session: &SensingSession) -> Result<Option<SensingFrame>> {
-        let active = self.active_session.as_ref().ok_or_else(|| SdkError::InvalidArgument("no active sensing session".into()))?;
+        let active = self
+            .active_session
+            .as_ref()
+            .ok_or_else(|| SdkError::InvalidArgument("no active sensing session".into()))?;
         if active != session {
-            return Err(SdkError::InvalidArgument("sensing session does not match active session".into()));
+            return Err(SdkError::InvalidArgument(
+                "sensing session does not match active session".into(),
+            ));
         }
-        let Some(frame) = self.frames.pop_front() else { return Ok(None); };
+        let Some(frame) = self.frames.pop_front() else {
+            return Ok(None);
+        };
         if frame.infrastructure_id != session.infrastructure_id || frame.mode != session.mode {
-            return Err(SdkError::InvalidArgument("recorded frame does not match active sensing session".into()));
+            return Err(SdkError::InvalidArgument(
+                "recorded frame does not match active sensing session".into(),
+            ));
         }
         if frame.features.len() != session.feature_dimension {
-            return Err(SdkError::DimensionMismatch { expected: session.feature_dimension, actual: frame.features.len() });
+            return Err(SdkError::DimensionMismatch {
+                expected: session.feature_dimension,
+                actual: frame.features.len(),
+            });
         }
-        if frame.timestamp_ms < session.valid_from_ms || frame.timestamp_ms > session.valid_until_ms {
-            return Err(SdkError::InvalidArgument("recorded frame timestamp is outside the authorized sensing window".into()));
+        if frame.timestamp_ms < session.valid_from_ms || frame.timestamp_ms > session.valid_until_ms
+        {
+            return Err(SdkError::InvalidArgument(
+                "recorded frame timestamp is outside the authorized sensing window".into(),
+            ));
         }
         Ok(Some(frame))
     }
 
     fn stop(&mut self, session: SensingSession) -> Result<()> {
-        let active = self.active_session.as_ref().ok_or_else(|| SdkError::InvalidArgument("no active sensing session".into()))?;
+        let active = self
+            .active_session
+            .as_ref()
+            .ok_or_else(|| SdkError::InvalidArgument("no active sensing session".into()))?;
         if active != &session {
-            return Err(SdkError::InvalidArgument("sensing session does not match active session".into()));
+            return Err(SdkError::InvalidArgument(
+                "sensing session does not match active session".into(),
+            ));
         }
         self.active_session = None;
         Ok(())
@@ -291,23 +427,36 @@ fn validate_authorized_request(
     validate_authorization(authorization)?;
     validate_request(request)?;
     if now_ms < authorization.valid_from_ms || now_ms > authorization.valid_until_ms {
-        return Err(SdkError::InvalidArgument("operator authorization is not valid at requested time".into()));
+        return Err(SdkError::InvalidArgument(
+            "operator authorization is not valid at requested time".into(),
+        ));
     }
     if authorization.infrastructure_id != request.infrastructure_id {
-        return Err(SdkError::InvalidArgument("operator authorization infrastructure does not match sensing request".into()));
+        return Err(SdkError::InvalidArgument(
+            "operator authorization infrastructure does not match sensing request".into(),
+        ));
     }
     if !authorization.allowed_modes.contains(&request.mode) {
-        return Err(SdkError::InvalidArgument("operator authorization does not allow requested sensing mode".into()));
+        return Err(SdkError::InvalidArgument(
+            "operator authorization does not allow requested sensing mode".into(),
+        ));
     }
     if let Some(value) = capabilities {
         if value.infrastructure_id != request.infrastructure_id {
-            return Err(SdkError::InvalidArgument("provider infrastructure does not match sensing request".into()));
+            return Err(SdkError::InvalidArgument(
+                "provider infrastructure does not match sensing request".into(),
+            ));
         }
         if !value.modes.contains(&request.mode) {
-            return Err(SdkError::InvalidArgument("provider does not support requested sensing mode".into()));
+            return Err(SdkError::InvalidArgument(
+                "provider does not support requested sensing mode".into(),
+            ));
         }
         if request.feature_dimension > value.max_feature_dimension {
-            return Err(SdkError::DimensionLimit { actual: request.feature_dimension, max: value.max_feature_dimension });
+            return Err(SdkError::DimensionLimit {
+                actual: request.feature_dimension,
+                max: value.max_feature_dimension,
+            });
         }
     }
     Ok(())
@@ -318,7 +467,8 @@ fn validate_capabilities(capabilities: &SensingCapabilities) -> Result<()> {
         capabilities.infrastructure_id.clone(),
         capabilities.modes.clone(),
         capabilities.max_feature_dimension,
-    ).map(|_| ())
+    )
+    .map(|_| ())
 }
 
 fn validate_authorization(authorization: &OperatorAuthorization) -> Result<()> {
@@ -329,7 +479,8 @@ fn validate_authorization(authorization: &OperatorAuthorization) -> Result<()> {
         authorization.valid_until_ms,
         authorization.allowed_modes.clone(),
         authorization.authorization_digest,
-    ).map(|_| ())
+    )
+    .map(|_| ())
 }
 
 fn validate_request(request: &SensingRequest) -> Result<()> {
@@ -338,7 +489,8 @@ fn validate_request(request: &SensingRequest) -> Result<()> {
         request.mode,
         request.feature_dimension,
         request.configuration_digest,
-    ).map(|_| ())
+    )
+    .map(|_| ())
 }
 
 fn validate_features(features: &[f32]) -> Result<()> {
@@ -346,9 +498,16 @@ fn validate_features(features: &[f32]) -> Result<()> {
         return Err(SdkError::EmptyFeatures);
     }
     if features.len() > MAX_FEATURES {
-        return Err(SdkError::DimensionLimit { actual: features.len(), max: MAX_FEATURES });
+        return Err(SdkError::DimensionLimit {
+            actual: features.len(),
+            max: MAX_FEATURES,
+        });
     }
-    if let Some((index, _)) = features.iter().enumerate().find(|(_, value)| !value.is_finite()) {
+    if let Some((index, _)) = features
+        .iter()
+        .enumerate()
+        .find(|(_, value)| !value.is_finite())
+    {
         return Err(SdkError::NonFiniteValue { index });
     }
     Ok(())
@@ -356,15 +515,24 @@ fn validate_features(features: &[f32]) -> Result<()> {
 
 fn validate_text(field: &str, value: &str) -> Result<()> {
     if value.trim().is_empty() {
-        return Err(SdkError::InvalidArgument(format!("{field} must not be empty")));
+        return Err(SdkError::InvalidArgument(format!(
+            "{field} must not be empty"
+        )));
     }
     if value.len() > MAX_TEXT_BYTES {
-        return Err(SdkError::DimensionLimit { actual: value.len(), max: MAX_TEXT_BYTES });
+        return Err(SdkError::DimensionLimit {
+            actual: value.len(),
+            max: MAX_TEXT_BYTES,
+        });
     }
     Ok(())
 }
 
-fn session_digest(authorization: &OperatorAuthorization, request: &SensingRequest, now_ms: u64) -> Digest32 {
+fn session_digest(
+    authorization: &OperatorAuthorization,
+    request: &SensingRequest,
+    now_ms: u64,
+) -> Digest32 {
     let mut hasher = Sha256::new();
     hasher.update(b"anderion-cuas-isac-session-v1");
     update_bytes(&mut hasher, authorization.operator_id.as_bytes());
@@ -372,7 +540,9 @@ fn session_digest(authorization: &OperatorAuthorization, request: &SensingReques
     hasher.update(authorization.authorization_digest.as_bytes());
     hasher.update(authorization.valid_from_ms.to_le_bytes());
     hasher.update(authorization.valid_until_ms.to_le_bytes());
-    for mode in &authorization.allowed_modes { hasher.update([mode_byte(*mode)]); }
+    for mode in &authorization.allowed_modes {
+        hasher.update([mode_byte(*mode)]);
+    }
     hasher.update(request.configuration_digest.as_bytes());
     hasher.update([mode_byte(request.mode)]);
     hasher.update((request.feature_dimension as u64).to_le_bytes());
@@ -392,7 +562,9 @@ fn combined_configuration_digest(
     hasher.update(authorization.authorization_digest.as_bytes());
     hasher.update(authorization.valid_from_ms.to_le_bytes());
     hasher.update(authorization.valid_until_ms.to_le_bytes());
-    for mode in &authorization.allowed_modes { hasher.update([mode_byte(*mode)]); }
+    for mode in &authorization.allowed_modes {
+        hasher.update([mode_byte(*mode)]);
+    }
     hasher.update(request.configuration_digest.as_bytes());
     update_bytes(&mut hasher, request.infrastructure_id.as_bytes());
     hasher.update([mode_byte(request.mode)]);
