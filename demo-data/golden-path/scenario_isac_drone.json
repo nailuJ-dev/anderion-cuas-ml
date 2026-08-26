@@ -1,0 +1,45 @@
+{
+  "name": "authorized-5g-mimo-isac-drone",
+  "source": {
+    "source_type": "isac_recorded",
+    "input": {
+      "infrastructure_id": "5g-mimo-demo-sector-01",
+      "operator_id": "demo-operator",
+      "timestamp_ms": 24000,
+      "valid_from_ms": 23900,
+      "valid_until_ms": 24100,
+      "authorization_token": "public-demo-authorization",
+      "configuration_token": "public-demo-isac-config",
+      "features": [
+        0.47818661,
+        0.085,
+        0.52991926,
+        0.8480481,
+        0.190809,
+        0.98162718,
+        0.6,
+        0.59019861,
+        0.86,
+        0.07290649,
+        0.78,
+        0.7,
+        0.08333333
+      ]
+    }
+  },
+  "candidate": {
+    "timestamp_ms": 24000,
+    "position": {
+      "latitude_deg": 48.119,
+      "longitude_deg": -1.679,
+      "altitude_m": 88
+    },
+    "velocity": {
+      "north_mps": 5,
+      "east_mps": 1,
+      "down_mps": 0
+    }
+  },
+  "cooperative_tracks": [],
+  "expected_label": "drone"
+}

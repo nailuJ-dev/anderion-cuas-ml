@@ -1,0 +1,39 @@
+{
+  "name": "unmatched-bird",
+  "source": {
+    "source_type": "recorded",
+    "frame": {
+      "id": "unmatched-bird-frame",
+      "sensor_id": "reference-fused-sensor",
+      "timestamp_ms": 23000,
+      "measurements": {
+        "range_m": 190,
+        "radial_velocity_mps": 9,
+        "azimuth_deg": -22,
+        "elevation_deg": 14,
+        "snr_db": 16,
+        "doppler_spread_hz": 38,
+        "micro_doppler_index": 0.58,
+        "rcs_proxy": 0.18,
+        "rf_energy": 0.1,
+        "burstiness": 0.18,
+        "angular_rate_dps": 38
+      }
+    }
+  },
+  "candidate": {
+    "timestamp_ms": 23000,
+    "position": {
+      "latitude_deg": 48.118,
+      "longitude_deg": -1.676,
+      "altitude_m": 55
+    },
+    "velocity": {
+      "north_mps": 7,
+      "east_mps": 3,
+      "down_mps": 0
+    }
+  },
+  "cooperative_tracks": [],
+  "expected_label": "bird"
+}

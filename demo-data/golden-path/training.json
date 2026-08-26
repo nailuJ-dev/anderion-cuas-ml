@@ -1,0 +1,436 @@
+{
+  "samples": [
+    {
+      "frame": {
+        "id": "drone-0",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 10000,
+        "measurements": {
+          "range_m": 180,
+          "radial_velocity_mps": 12,
+          "azimuth_deg": 25,
+          "elevation_deg": 8,
+          "snr_db": 20.0,
+          "doppler_spread_hz": 45,
+          "micro_doppler_index": 0.76,
+          "rcs_proxy": 0.28,
+          "rf_energy": 0.66,
+          "burstiness": 0.55,
+          "angular_rate_dps": 10
+        }
+      },
+      "detected": true,
+      "class_label": "drone",
+      "position": {
+        "x": 161.54777915176138,
+        "y": 75.33096657639875,
+        "z": 25.05115817281178
+      }
+    },
+    {
+      "frame": {
+        "id": "drone-1",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 10001,
+        "measurements": {
+          "range_m": 205,
+          "radial_velocity_mps": 14,
+          "azimuth_deg": 29,
+          "elevation_deg": 9,
+          "snr_db": 21.5,
+          "doppler_spread_hz": 50,
+          "micro_doppler_index": 0.79,
+          "rcs_proxy": 0.33,
+          "rf_energy": 0.7000000000000001,
+          "burstiness": 0.6000000000000001,
+          "angular_rate_dps": 12
+        }
+      },
+      "detected": true,
+      "class_label": "drone",
+      "position": {
+        "x": 177.0895958752446,
+        "y": 98.16236591176103,
+        "z": 32.06906533324733
+      }
+    },
+    {
+      "frame": {
+        "id": "drone-2",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 10002,
+        "measurements": {
+          "range_m": 230,
+          "radial_velocity_mps": 16,
+          "azimuth_deg": 33,
+          "elevation_deg": 10,
+          "snr_db": 23.0,
+          "doppler_spread_hz": 55,
+          "micro_doppler_index": 0.8200000000000001,
+          "rcs_proxy": 0.38,
+          "rf_energy": 0.74,
+          "burstiness": 0.65,
+          "angular_rate_dps": 14
+        }
+      },
+      "detected": true,
+      "class_label": "drone",
+      "position": {
+        "x": 189.96373383323524,
+        "y": 123.36389118345382,
+        "z": 39.939080863393976
+      }
+    },
+    {
+      "frame": {
+        "id": "drone-3",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 10003,
+        "measurements": {
+          "range_m": 255,
+          "radial_velocity_mps": 18,
+          "azimuth_deg": 37,
+          "elevation_deg": 11,
+          "snr_db": 24.5,
+          "doppler_spread_hz": 60,
+          "micro_doppler_index": 0.85,
+          "rcs_proxy": 0.43000000000000005,
+          "rf_energy": 0.78,
+          "burstiness": 0.7000000000000001,
+          "angular_rate_dps": 16
+        }
+      },
+      "detected": true,
+      "class_label": "drone",
+      "position": {
+        "x": 199.9103932138982,
+        "y": 150.64328646397513,
+        "z": 48.65629382101893
+      }
+    },
+    {
+      "frame": {
+        "id": "bird-0",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 11000,
+        "measurements": {
+          "range_m": 160,
+          "radial_velocity_mps": 7.0,
+          "azimuth_deg": -30,
+          "elevation_deg": 12,
+          "snr_db": 14.0,
+          "doppler_spread_hz": 28,
+          "micro_doppler_index": 0.48,
+          "rcs_proxy": 0.14,
+          "rf_energy": 0.07,
+          "burstiness": 0.12,
+          "angular_rate_dps": 30
+        }
+      },
+      "detected": true,
+      "class_label": "bird",
+      "position": {
+        "x": 135.53610734180384,
+        "y": -78.25180805870444,
+        "z": 33.2658705308415
+      }
+    },
+    {
+      "frame": {
+        "id": "bird-1",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 11001,
+        "measurements": {
+          "range_m": 180,
+          "radial_velocity_mps": 8.5,
+          "azimuth_deg": -25,
+          "elevation_deg": 13,
+          "snr_db": 15.2,
+          "doppler_spread_hz": 34,
+          "micro_doppler_index": 0.52,
+          "rcs_proxy": 0.17,
+          "rf_energy": 0.09000000000000001,
+          "burstiness": 0.15,
+          "angular_rate_dps": 34
+        }
+      },
+      "detected": true,
+      "class_label": "bird",
+      "position": {
+        "x": 158.9542518906475,
+        "y": -74.1215849529076,
+        "z": 40.4911897818957
+      }
+    },
+    {
+      "frame": {
+        "id": "bird-2",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 11002,
+        "measurements": {
+          "range_m": 200,
+          "radial_velocity_mps": 10.0,
+          "azimuth_deg": -20,
+          "elevation_deg": 14,
+          "snr_db": 16.4,
+          "doppler_spread_hz": 40,
+          "micro_doppler_index": 0.5599999999999999,
+          "rcs_proxy": 0.2,
+          "rf_energy": 0.11000000000000001,
+          "burstiness": 0.18,
+          "angular_rate_dps": 38
+        }
+      },
+      "detected": true,
+      "class_label": "bird",
+      "position": {
+        "x": 182.3559467923315,
+        "y": -66.37213667384003,
+        "z": 48.38437911993355
+      }
+    },
+    {
+      "frame": {
+        "id": "bird-3",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 11003,
+        "measurements": {
+          "range_m": 220,
+          "radial_velocity_mps": 11.5,
+          "azimuth_deg": -15,
+          "elevation_deg": 15,
+          "snr_db": 17.6,
+          "doppler_spread_hz": 46,
+          "micro_doppler_index": 0.6,
+          "rcs_proxy": 0.23,
+          "rf_energy": 0.13,
+          "burstiness": 0.21,
+          "angular_rate_dps": 42
+        }
+      },
+      "detected": true,
+      "class_label": "bird",
+      "position": {
+        "x": 205.26279441628827,
+        "y": -54.99999999999999,
+        "z": 56.940189922554566
+      }
+    },
+    {
+      "frame": {
+        "id": "aircraft-0",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 12000,
+        "measurements": {
+          "range_m": 1200,
+          "radial_velocity_mps": 90,
+          "azimuth_deg": 55,
+          "elevation_deg": 18,
+          "snr_db": 28.0,
+          "doppler_spread_hz": 14,
+          "micro_doppler_index": 0.08,
+          "rcs_proxy": 7,
+          "rf_energy": 0.25,
+          "burstiness": 0.1,
+          "angular_rate_dps": 2.0
+        }
+      },
+      "detected": true,
+      "class_label": "aircraft",
+      "position": {
+        "x": 654.6043288620177,
+        "y": 934.8718674690501,
+        "z": 370.8203932499369
+      }
+    },
+    {
+      "frame": {
+        "id": "aircraft-1",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 12001,
+        "measurements": {
+          "range_m": 1450,
+          "radial_velocity_mps": 105,
+          "azimuth_deg": 58,
+          "elevation_deg": 19,
+          "snr_db": 29.5,
+          "doppler_spread_hz": 17,
+          "micro_doppler_index": 0.1,
+          "rcs_proxy": 9,
+          "rf_energy": 0.28,
+          "burstiness": 0.12000000000000001,
+          "angular_rate_dps": 2.5
+        }
+      },
+      "detected": true,
+      "class_label": "aircraft",
+      "position": {
+        "x": 726.520336455606,
+        "y": 1162.6755804804277,
+        "z": 472.0738239628772
+      }
+    },
+    {
+      "frame": {
+        "id": "aircraft-2",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 12002,
+        "measurements": {
+          "range_m": 1700,
+          "radial_velocity_mps": 120,
+          "azimuth_deg": 61,
+          "elevation_deg": 20,
+          "snr_db": 31.0,
+          "doppler_spread_hz": 20,
+          "micro_doppler_index": 0.12,
+          "rcs_proxy": 11,
+          "rf_energy": 0.31,
+          "burstiness": 0.14,
+          "angular_rate_dps": 3.0
+        }
+      },
+      "detected": true,
+      "class_label": "aircraft",
+      "position": {
+        "x": 774.4724384735526,
+        "y": 1397.1852641477983,
+        "z": 581.4342436536368
+      }
+    },
+    {
+      "frame": {
+        "id": "aircraft-3",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 12003,
+        "measurements": {
+          "range_m": 1950,
+          "radial_velocity_mps": 135,
+          "azimuth_deg": 64,
+          "elevation_deg": 21,
+          "snr_db": 32.5,
+          "doppler_spread_hz": 23,
+          "micro_doppler_index": 0.14,
+          "rcs_proxy": 13,
+          "rf_energy": 0.33999999999999997,
+          "burstiness": 0.16,
+          "angular_rate_dps": 3.5
+        }
+      },
+      "detected": true,
+      "class_label": "aircraft",
+      "position": {
+        "x": 798.046708257658,
+        "y": 1636.238231700388,
+        "z": 698.8175016133355
+      }
+    },
+    {
+      "frame": {
+        "id": "background-0",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 13000,
+        "measurements": {
+          "range_m": 65,
+          "radial_velocity_mps": 0.5,
+          "azimuth_deg": -10,
+          "elevation_deg": 2.0,
+          "snr_db": 2.0,
+          "doppler_spread_hz": 2.0,
+          "micro_doppler_index": 0.025,
+          "rcs_proxy": 0.02,
+          "rf_energy": 0.025,
+          "burstiness": 0.03,
+          "angular_rate_dps": 0.3
+        }
+      },
+      "detected": false,
+      "class_label": "background",
+      "position": {
+        "x": 63.973509257949715,
+        "y": -11.280255732779304,
+        "z": 2.268467285662563
+      }
+    },
+    {
+      "frame": {
+        "id": "background-1",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 13001,
+        "measurements": {
+          "range_m": 73,
+          "radial_velocity_mps": 0.7,
+          "azimuth_deg": -8,
+          "elevation_deg": 2.5,
+          "snr_db": 2.8,
+          "doppler_spread_hz": 2.7,
+          "micro_doppler_index": 0.035,
+          "rcs_proxy": 0.025,
+          "rf_energy": 0.035,
+          "burstiness": 0.04,
+          "angular_rate_dps": 0.4
+        }
+      },
+      "detected": false,
+      "class_label": "background",
+      "position": {
+        "x": 72.22076536648638,
+        "y": -10.149966647451558,
+        "z": 3.184215277669528
+      }
+    },
+    {
+      "frame": {
+        "id": "background-2",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 13002,
+        "measurements": {
+          "range_m": 81,
+          "radial_velocity_mps": 0.9,
+          "azimuth_deg": -6,
+          "elevation_deg": 3.0,
+          "snr_db": 3.6,
+          "doppler_spread_hz": 3.4,
+          "micro_doppler_index": 0.045,
+          "rcs_proxy": 0.03,
+          "rf_energy": 0.045,
+          "burstiness": 0.05,
+          "angular_rate_dps": 0.5
+        }
+      },
+      "detected": false,
+      "class_label": "background",
+      "position": {
+        "x": 80.4458739516633,
+        "y": -8.455202061968574,
+        "z": 4.239212455678451
+      }
+    },
+    {
+      "frame": {
+        "id": "background-3",
+        "sensor_id": "reference-fused-sensor",
+        "timestamp_ms": 13003,
+        "measurements": {
+          "range_m": 89,
+          "radial_velocity_mps": 1.1,
+          "azimuth_deg": -4,
+          "elevation_deg": 3.5,
+          "snr_db": 4.4,
+          "doppler_spread_hz": 4.1,
+          "micro_doppler_index": 0.055,
+          "rcs_proxy": 0.035,
+          "rf_energy": 0.055,
+          "burstiness": 0.06,
+          "angular_rate_dps": 0.6000000000000001
+        }
+      },
+      "detected": false,
+      "class_label": "background",
+      "position": {
+        "x": 88.61760190749017,
+        "y": -6.196746383469935,
+        "z": 5.433320018602262
+      }
+    }
+  ]
+}

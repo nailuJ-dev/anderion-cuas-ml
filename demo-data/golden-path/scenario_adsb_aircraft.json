@@ -1,0 +1,56 @@
+{
+  "name": "adsb-aircraft",
+  "source": {
+    "source_type": "recorded",
+    "frame": {
+      "id": "adsb-aircraft-frame",
+      "sensor_id": "reference-fused-sensor",
+      "timestamp_ms": 22000,
+      "measurements": {
+        "range_m": 1600,
+        "radial_velocity_mps": 115,
+        "azimuth_deg": 58,
+        "elevation_deg": 20,
+        "snr_db": 31,
+        "doppler_spread_hz": 18,
+        "micro_doppler_index": 0.11,
+        "rcs_proxy": 11,
+        "rf_energy": 0.31,
+        "burstiness": 0.14,
+        "angular_rate_dps": 2.5
+      }
+    }
+  },
+  "candidate": {
+    "timestamp_ms": 22000,
+    "position": {
+      "latitude_deg": 48.12,
+      "longitude_deg": -1.68,
+      "altitude_m": 900
+    },
+    "velocity": {
+      "north_mps": 114,
+      "east_mps": 10,
+      "down_mps": -1
+    }
+  },
+  "cooperative_tracks": [
+    {
+      "kind": "Adsb",
+      "identity": "ICAO-DEMO-A1",
+      "timestamp_ms": 22050,
+      "position": {
+        "latitude_deg": 48.12002,
+        "longitude_deg": -1.68001,
+        "altitude_m": 905
+      },
+      "velocity": {
+        "north_mps": 115,
+        "east_mps": 10,
+        "down_mps": -1
+      },
+      "source_confidence": 0.99
+    }
+  ],
+  "expected_label": "aircraft"
+}

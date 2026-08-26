@@ -1,0 +1,27 @@
+{
+  "name": "background-clutter",
+  "source": {
+    "source_type": "recorded",
+    "frame": {
+      "id": "background-eval",
+      "sensor_id": "reference-fused-sensor",
+      "timestamp_ms": 25000,
+      "measurements": {
+        "range_m": 82,
+        "radial_velocity_mps": 0.7,
+        "azimuth_deg": -4,
+        "elevation_deg": 3,
+        "snr_db": 3.5,
+        "doppler_spread_hz": 3.0,
+        "micro_doppler_index": 0.04,
+        "rcs_proxy": 0.025,
+        "rf_energy": 0.04,
+        "burstiness": 0.05,
+        "angular_rate_dps": 0.5
+      }
+    }
+  },
+  "candidate": null,
+  "cooperative_tracks": [],
+  "expected_label": "background"
+}

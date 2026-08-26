@@ -1,0 +1,72 @@
+{
+  "name": "remote-id-drone",
+  "source": {
+    "source_type": "recorded",
+    "frame": {
+      "id": "remote-id-drone-frame",
+      "sensor_id": "reference-fused-sensor",
+      "timestamp_ms": 21000,
+      "measurements": {
+        "range_m": 220,
+        "radial_velocity_mps": 15,
+        "azimuth_deg": 36,
+        "elevation_deg": 9,
+        "snr_db": 22,
+        "doppler_spread_hz": 52,
+        "micro_doppler_index": 0.82,
+        "rcs_proxy": 0.34,
+        "rf_energy": 0.72,
+        "burstiness": 0.62,
+        "angular_rate_dps": 13
+      }
+    }
+  },
+  "candidate": {
+    "timestamp_ms": 21000,
+    "position": {
+      "latitude_deg": 48.1173,
+      "longitude_deg": -1.6778,
+      "altitude_m": 82
+    },
+    "velocity": {
+      "north_mps": 4,
+      "east_mps": 1,
+      "down_mps": 0
+    }
+  },
+  "cooperative_tracks": [
+    {
+      "kind": "RemoteId",
+      "identity": "RID-DEMO-001",
+      "timestamp_ms": 21020,
+      "position": {
+        "latitude_deg": 48.11731,
+        "longitude_deg": -1.67779,
+        "altitude_m": 82.5
+      },
+      "velocity": {
+        "north_mps": 4,
+        "east_mps": 1,
+        "down_mps": 0
+      },
+      "source_confidence": 0.99
+    },
+    {
+      "kind": "Ais",
+      "identity": "MMSI-DEMO-001",
+      "timestamp_ms": 20040,
+      "position": {
+        "latitude_deg": 48.13,
+        "longitude_deg": -1.69,
+        "altitude_m": 2
+      },
+      "velocity": {
+        "north_mps": 2,
+        "east_mps": 0,
+        "down_mps": 0
+      },
+      "source_confidence": 0.95
+    }
+  ],
+  "expected_label": "drone"
+}

@@ -1,0 +1,299 @@
+{
+  "scenarios": [
+    {
+      "name": "unmatched-drone-with-ais-comparison",
+      "source": {
+        "source_type": "recorded",
+        "frame": {
+          "id": "unmatched-drone-with-ais-comparison-frame",
+          "sensor_id": "reference-fused-sensor",
+          "timestamp_ms": 20000,
+          "measurements": {
+            "range_m": 230,
+            "radial_velocity_mps": 16,
+            "azimuth_deg": 34,
+            "elevation_deg": 10,
+            "snr_db": 23,
+            "doppler_spread_hz": 55,
+            "micro_doppler_index": 0.84,
+            "rcs_proxy": 0.38,
+            "rf_energy": 0.74,
+            "burstiness": 0.66,
+            "angular_rate_dps": 14
+          }
+        }
+      },
+      "candidate": {
+        "timestamp_ms": 20000,
+        "position": {
+          "latitude_deg": 48.1173,
+          "longitude_deg": -1.6778,
+          "altitude_m": 82
+        },
+        "velocity": {
+          "north_mps": 4,
+          "east_mps": 1,
+          "down_mps": 0
+        }
+      },
+      "cooperative_tracks": [
+        {
+          "kind": "Ais",
+          "identity": "MMSI-DEMO-001",
+          "timestamp_ms": 20040,
+          "position": {
+            "latitude_deg": 48.13,
+            "longitude_deg": -1.69,
+            "altitude_m": 2
+          },
+          "velocity": {
+            "north_mps": 2,
+            "east_mps": 0,
+            "down_mps": 0
+          },
+          "source_confidence": 0.95
+        }
+      ],
+      "expected_label": "drone"
+    },
+    {
+      "name": "remote-id-drone",
+      "source": {
+        "source_type": "recorded",
+        "frame": {
+          "id": "remote-id-drone-frame",
+          "sensor_id": "reference-fused-sensor",
+          "timestamp_ms": 21000,
+          "measurements": {
+            "range_m": 220,
+            "radial_velocity_mps": 15,
+            "azimuth_deg": 36,
+            "elevation_deg": 9,
+            "snr_db": 22,
+            "doppler_spread_hz": 52,
+            "micro_doppler_index": 0.82,
+            "rcs_proxy": 0.34,
+            "rf_energy": 0.72,
+            "burstiness": 0.62,
+            "angular_rate_dps": 13
+          }
+        }
+      },
+      "candidate": {
+        "timestamp_ms": 21000,
+        "position": {
+          "latitude_deg": 48.1173,
+          "longitude_deg": -1.6778,
+          "altitude_m": 82
+        },
+        "velocity": {
+          "north_mps": 4,
+          "east_mps": 1,
+          "down_mps": 0
+        }
+      },
+      "cooperative_tracks": [
+        {
+          "kind": "RemoteId",
+          "identity": "RID-DEMO-001",
+          "timestamp_ms": 21020,
+          "position": {
+            "latitude_deg": 48.11731,
+            "longitude_deg": -1.67779,
+            "altitude_m": 82.5
+          },
+          "velocity": {
+            "north_mps": 4,
+            "east_mps": 1,
+            "down_mps": 0
+          },
+          "source_confidence": 0.99
+        },
+        {
+          "kind": "Ais",
+          "identity": "MMSI-DEMO-001",
+          "timestamp_ms": 20040,
+          "position": {
+            "latitude_deg": 48.13,
+            "longitude_deg": -1.69,
+            "altitude_m": 2
+          },
+          "velocity": {
+            "north_mps": 2,
+            "east_mps": 0,
+            "down_mps": 0
+          },
+          "source_confidence": 0.95
+        }
+      ],
+      "expected_label": "drone"
+    },
+    {
+      "name": "adsb-aircraft",
+      "source": {
+        "source_type": "recorded",
+        "frame": {
+          "id": "adsb-aircraft-frame",
+          "sensor_id": "reference-fused-sensor",
+          "timestamp_ms": 22000,
+          "measurements": {
+            "range_m": 1600,
+            "radial_velocity_mps": 115,
+            "azimuth_deg": 58,
+            "elevation_deg": 20,
+            "snr_db": 31,
+            "doppler_spread_hz": 18,
+            "micro_doppler_index": 0.11,
+            "rcs_proxy": 11,
+            "rf_energy": 0.31,
+            "burstiness": 0.14,
+            "angular_rate_dps": 2.5
+          }
+        }
+      },
+      "candidate": {
+        "timestamp_ms": 22000,
+        "position": {
+          "latitude_deg": 48.12,
+          "longitude_deg": -1.68,
+          "altitude_m": 900
+        },
+        "velocity": {
+          "north_mps": 114,
+          "east_mps": 10,
+          "down_mps": -1
+        }
+      },
+      "cooperative_tracks": [
+        {
+          "kind": "Adsb",
+          "identity": "ICAO-DEMO-A1",
+          "timestamp_ms": 22050,
+          "position": {
+            "latitude_deg": 48.12002,
+            "longitude_deg": -1.68001,
+            "altitude_m": 905
+          },
+          "velocity": {
+            "north_mps": 115,
+            "east_mps": 10,
+            "down_mps": -1
+          },
+          "source_confidence": 0.99
+        }
+      ],
+      "expected_label": "aircraft"
+    },
+    {
+      "name": "unmatched-bird",
+      "source": {
+        "source_type": "recorded",
+        "frame": {
+          "id": "unmatched-bird-frame",
+          "sensor_id": "reference-fused-sensor",
+          "timestamp_ms": 23000,
+          "measurements": {
+            "range_m": 190,
+            "radial_velocity_mps": 9,
+            "azimuth_deg": -22,
+            "elevation_deg": 14,
+            "snr_db": 16,
+            "doppler_spread_hz": 38,
+            "micro_doppler_index": 0.58,
+            "rcs_proxy": 0.18,
+            "rf_energy": 0.1,
+            "burstiness": 0.18,
+            "angular_rate_dps": 38
+          }
+        }
+      },
+      "candidate": {
+        "timestamp_ms": 23000,
+        "position": {
+          "latitude_deg": 48.118,
+          "longitude_deg": -1.676,
+          "altitude_m": 55
+        },
+        "velocity": {
+          "north_mps": 7,
+          "east_mps": 3,
+          "down_mps": 0
+        }
+      },
+      "cooperative_tracks": [],
+      "expected_label": "bird"
+    },
+    {
+      "name": "authorized-5g-mimo-isac-drone",
+      "source": {
+        "source_type": "isac_recorded",
+        "input": {
+          "infrastructure_id": "5g-mimo-demo-sector-01",
+          "operator_id": "demo-operator",
+          "timestamp_ms": 24000,
+          "valid_from_ms": 23900,
+          "valid_until_ms": 24100,
+          "authorization_token": "public-demo-authorization",
+          "configuration_token": "public-demo-isac-config",
+          "features": [
+            0.47818661,
+            0.085,
+            0.52991926,
+            0.8480481,
+            0.190809,
+            0.98162718,
+            0.6,
+            0.59019861,
+            0.86,
+            0.07290649,
+            0.78,
+            0.7,
+            0.08333333
+          ]
+        }
+      },
+      "candidate": {
+        "timestamp_ms": 24000,
+        "position": {
+          "latitude_deg": 48.119,
+          "longitude_deg": -1.679,
+          "altitude_m": 88
+        },
+        "velocity": {
+          "north_mps": 5,
+          "east_mps": 1,
+          "down_mps": 0
+        }
+      },
+      "cooperative_tracks": [],
+      "expected_label": "drone"
+    },
+    {
+      "name": "background-clutter",
+      "source": {
+        "source_type": "recorded",
+        "frame": {
+          "id": "background-eval",
+          "sensor_id": "reference-fused-sensor",
+          "timestamp_ms": 25000,
+          "measurements": {
+            "range_m": 82,
+            "radial_velocity_mps": 0.7,
+            "azimuth_deg": -4,
+            "elevation_deg": 3,
+            "snr_db": 3.5,
+            "doppler_spread_hz": 3.0,
+            "micro_doppler_index": 0.04,
+            "rcs_proxy": 0.025,
+            "rf_energy": 0.04,
+            "burstiness": 0.05,
+            "angular_rate_dps": 0.5
+          }
+        }
+      },
+      "candidate": null,
+      "cooperative_tracks": [],
+      "expected_label": "background"
+    }
+  ]
+}
