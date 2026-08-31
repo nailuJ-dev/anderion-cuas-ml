@@ -101,8 +101,29 @@ pub fn assess_cooperative_trust(
     if physical_signature_consistency.is_some() {
         evidence_count += 1;
     }
+
+    // Do not allow a weighted average to hide several independent
+    // contradictions in physical observations.
+    //
+    // Position, velocity and physical signature are treated as independent
+    // physical evidence channels. Two channels below the configured conflict
+    // threshold are sufficient to report a conflict, even when cooperative
+    // source confidence or timestamp freshness are high.
+
+    let physical_conflict_count = [
+        Some(position_consistency),
+        velocity_consistency,
+        physical_signature_consistency,
+    ]
+    .into_iter()
+    .flatten()
+    .filter(|value| *value <= policy.conflict_threshold)
+    .count();
+
     let verdict = if evidence_count < 3 {
-        CooperativeTrustVerdict::InsufficientEvidence
+    CooperativeTrustVerdict::InsufficientEvidence
+    } else if physical_conflict_count >= 2 {
+        CooperativeTrustVerdict::Conflict
     } else if aggregate >= policy.consistent_threshold {
         CooperativeTrustVerdict::Consistent
     } else if aggregate <= policy.conflict_threshold {
