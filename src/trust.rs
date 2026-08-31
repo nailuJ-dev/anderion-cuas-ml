@@ -63,7 +63,9 @@ pub fn assess_cooperative_trust(
     if let Some(value) = velocity_consistency { weighted += 0.15 * value; weight += 0.15; }
     if let Some(value) = physical_signature_consistency { weighted += 0.15 * value; weight += 0.15; }
     let aggregate = (weighted / weight).clamp(0.0, 1.0);
-    let evidence_count = 3 + usize::from(velocity_consistency.is_some()) + usize::from(physical_signature_consistency.is_some());
+    let mut evidence_count = 3usize;
+    if velocity_consistency.is_some() { evidence_count += 1; }
+    if physical_signature_consistency.is_some() { evidence_count += 1; }
     let verdict = if evidence_count < 3 { CooperativeTrustVerdict::InsufficientEvidence }
         else if aggregate >= policy.consistent_threshold { CooperativeTrustVerdict::Consistent }
         else if aggregate <= policy.conflict_threshold { CooperativeTrustVerdict::Conflict }
