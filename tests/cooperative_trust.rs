@@ -56,12 +56,9 @@ fn large_physical_mismatch_is_reported_as_conflict() {
 
 #[test]
 fn isolated_position_mismatch_without_second_physical_conflict_is_not_forced_to_conflict() {
-    let candidate = CandidateKinematics::new(
-        1_000,
-        GeoPosition::new(48.0, -1.0, 120.0).unwrap(),
-        None,
-    )
-    .unwrap();
+    let candidate =
+        CandidateKinematics::new(1_000, GeoPosition::new(48.0, -1.0, 120.0).unwrap(), None)
+            .unwrap();
 
     let track = CooperativeTrack::new(
         CooperativeIdentityKind::RemoteId,
@@ -81,8 +78,5 @@ fn isolated_position_mismatch_without_second_physical_conflict_is_not_forced_to_
     )
     .unwrap();
 
-    assert_eq!(
-        result.verdict,
-        CooperativeTrustVerdict::WeaklyConsistent
-    );
+    assert_eq!(result.verdict, CooperativeTrustVerdict::WeaklyConsistent);
 }

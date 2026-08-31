@@ -121,7 +121,7 @@ pub fn assess_cooperative_trust(
     .count();
 
     let verdict = if evidence_count < 3 {
-    CooperativeTrustVerdict::InsufficientEvidence
+        CooperativeTrustVerdict::InsufficientEvidence
     } else if physical_conflict_count >= 2 {
         CooperativeTrustVerdict::Conflict
     } else if aggregate >= policy.consistent_threshold {
