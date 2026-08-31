@@ -33,6 +33,7 @@ mod linear;
 mod localization;
 mod model;
 mod multimodal;
+mod micro_doppler;
 mod multimodal_alignment;
 mod neural_localization;
 mod ontology;
@@ -94,6 +95,7 @@ pub use isac::{
 pub use localization::LinearLocalizer;
 pub use model::{AssociationModel, Classifier, Detector, Encoder, Localizer, OpenSetModel};
 pub use multimodal::{MultimodalSelfAttention, MultimodalTransformerEncoder};
+pub use micro_doppler::{MicroDopplerExtractor, MicroDopplerFeatures};
 pub use multimodal_alignment::PairedModalAligner;
 pub use neural_localization::NeuralLocalizer;
 pub use open_set::NearestPrototypeOod;
