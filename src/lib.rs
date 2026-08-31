@@ -12,6 +12,7 @@ mod backend;
 mod benchmark;
 mod calibration;
 mod classification;
+mod contribution;
 mod cooperative;
 mod dataset;
 mod degarbling;
@@ -28,16 +29,14 @@ mod federated;
 mod fusion;
 mod golden;
 mod graph;
+mod group_perception;
 mod isac;
 mod isac_dual_view;
 mod linear;
 mod localization;
-mod contribution;
-mod group_perception;
-mod reacquisition;
+mod micro_doppler;
 mod model;
 mod multimodal;
-mod micro_doppler;
 mod multimodal_alignment;
 mod neural_localization;
 mod ontology;
@@ -45,13 +44,14 @@ mod open_set;
 mod pattern;
 mod pipeline;
 mod quantization;
+mod reacquisition;
 mod robustness;
 mod scenario;
 mod synthetic;
 mod temporal;
 mod tracking;
-mod trust;
 mod trajectory;
+mod trust;
 mod types;
 mod uncertainty;
 mod uncertainty_fusion;
@@ -69,6 +69,7 @@ pub use backend::{BackendKind, ComputeBackend, CpuBackend};
 pub use benchmark::{BenchmarkConfig, BenchmarkReport, benchmark_pipeline};
 pub use calibration::TemperatureScaler;
 pub use classification::PrototypeClassifier;
+pub use contribution::{ContributionLedger, SensorContribution};
 pub use cooperative::{
     CandidateKinematics, CooperativeCorrelation, CooperativeCorrelator, CooperativeDisposition,
     CooperativeIdentityKind, CooperativeTrack, CorrelationPolicy, GeoPosition, VelocityNed,
@@ -92,29 +93,31 @@ pub use evaluation::{ClassificationMetrics, classification_metrics};
 pub use federated::{FederatedAverager, FederatedDelta};
 pub use fusion::LearnedSensorFusion;
 pub use graph::{GraphEdge, GraphMessagePasser};
-pub use isac_dual_view::{DualViewFusionResult, fuse_isac_dual_view};
+pub use group_perception::{FormationType, GroupMember, GroupPerception, perceive_group};
 pub use isac::{
     ActiveSensingProvider, OperatorAuthorization, RecordedSensingProvider, SensingCapabilities,
     SensingFrame, SensingMode, SensingRequest, SensingSession,
 };
+pub use isac_dual_view::{DualViewFusionResult, fuse_isac_dual_view};
 pub use localization::LinearLocalizer;
-pub use contribution::{ContributionLedger, SensorContribution};
-pub use group_perception::{FormationType, GroupMember, GroupPerception, perceive_group};
-pub use reacquisition::{ReacquisitionEnvelope, ReacquisitionScore};
+pub use micro_doppler::{MicroDopplerExtractor, MicroDopplerFeatures};
 pub use model::{AssociationModel, Classifier, Detector, Encoder, Localizer, OpenSetModel};
 pub use multimodal::{MultimodalSelfAttention, MultimodalTransformerEncoder};
-pub use micro_doppler::{MicroDopplerExtractor, MicroDopplerFeatures};
 pub use multimodal_alignment::PairedModalAligner;
 pub use neural_localization::NeuralLocalizer;
 pub use open_set::NearestPrototypeOod;
 pub use pipeline::{PerceptionPipeline, PerceptionResult};
 pub use quantization::{QuantizedEmbedding, SymmetricQuantizer};
+pub use reacquisition::{ReacquisitionEnvelope, ReacquisitionScore};
 pub use robustness::{AdversarialReport, adversarial_evaluate, bounded_perturbation};
 pub use synthetic::{SyntheticTrajectoryConfig, synthetic_feature_trajectory};
 pub use temporal::{TemporalClassifier, TemporalSelfAttention};
 pub use tracking::{TrackManager, TrackObservation};
-pub use trust::{CooperativeTrustAssessment, CooperativeTrustPolicy, CooperativeTrustVerdict, assess_cooperative_trust};
 pub use trajectory::{AutoregressiveTrajectoryPredictor, TrajectorySample};
+pub use trust::{
+    CooperativeTrustAssessment, CooperativeTrustPolicy, CooperativeTrustVerdict,
+    assess_cooperative_trust,
+};
 pub use types::{ClassScore, Detection, Embedding, Localization, Observation, Position3, Track};
 pub use uncertainty::normalized_entropy;
 pub use uncertainty_fusion::UncertaintyWeightedFusion;
