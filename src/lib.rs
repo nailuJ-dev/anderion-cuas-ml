@@ -45,6 +45,7 @@ mod scenario;
 mod synthetic;
 mod temporal;
 mod tracking;
+mod trust;
 mod trajectory;
 mod types;
 mod uncertainty;
@@ -102,6 +103,7 @@ pub use robustness::{AdversarialReport, adversarial_evaluate, bounded_perturbati
 pub use synthetic::{SyntheticTrajectoryConfig, synthetic_feature_trajectory};
 pub use temporal::{TemporalClassifier, TemporalSelfAttention};
 pub use tracking::{TrackManager, TrackObservation};
+pub use trust::{CooperativeTrustAssessment, CooperativeTrustPolicy, CooperativeTrustVerdict, assess_cooperative_trust};
 pub use trajectory::{AutoregressiveTrajectoryPredictor, TrajectorySample};
 pub use types::{ClassScore, Detection, Embedding, Localization, Observation, Position3, Track};
 pub use uncertainty::normalized_entropy;
