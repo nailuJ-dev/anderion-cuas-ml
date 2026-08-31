@@ -29,6 +29,7 @@ mod fusion;
 mod golden;
 mod graph;
 mod isac;
+mod isac_dual_view;
 mod linear;
 mod localization;
 mod contribution;
@@ -91,6 +92,7 @@ pub use evaluation::{ClassificationMetrics, classification_metrics};
 pub use federated::{FederatedAverager, FederatedDelta};
 pub use fusion::LearnedSensorFusion;
 pub use graph::{GraphEdge, GraphMessagePasser};
+pub use isac_dual_view::{DualViewFusionResult, fuse_isac_dual_view};
 pub use isac::{
     ActiveSensingProvider, OperatorAuthorization, RecordedSensingProvider, SensingCapabilities,
     SensingFrame, SensingMode, SensingRequest, SensingSession,
