@@ -1,143 +1,301 @@
-# Anderion C-UAS ML
+# anderion-cuas-ml
 
-## Golden Path quickstart
+**Open-source multi-sensor perception for Counter-UAS research and airspace sensing.**
 
-Run an end-to-end reference C-UAS scenario with one command:
+`anderion-cuas-ml` provides reusable Rust components for detecting, classifying, localizing and tracking aerial objects using multiple sensing modalities.
 
-```bash
-./scripts/run_golden_path.sh
+The project focuses exclusively on the **perception side** of Counter-UAS systems.
+
+It does not provide jamming, takeover, neutralization, weapon control or autonomous engagement functionality.
+
+## What it does
+
+The SDK combines information from sources such as:
+
+* radar
+* RF observations
+* Remote ID
+* ADS-B
+* AIS where relevant
+* recorded or authorized 5G / ISAC sensing
+* trajectory information
+* multimodal observations
+
+to build more reliable local perception than any individual sensor can provide alone.
+
+## Core capabilities
+
+* aerial-object detection
+* drone classification
+* localization
+* multi-object tracking
+* sensor fusion
+* uncertainty estimation
+* trajectory analysis
+* multimodal alignment
+* cooperative identification correlation
+* robustness evaluation
+* deterministic verification
+
+## Cooperative identity trust
+
+Remote ID and other cooperative broadcasts are useful evidence, but they should not automatically be treated as physical truth.
+
+The SDK can compare cooperative declarations with sensor observations:
+
+```text
+Remote ID
+position / velocity / identity
+             ↓
+         consistency
+             ↑
+radar / RF / trajectory / ISAC
 ```
 
-The demo covers recorded sensing, detection/classification/localization, AIS/ADS-B/Remote ID correlation, ontology consistency and deterministic replay. A separate bundled scenario exercises the authorized recorded 5G-MIMO/ISAC provider contract. See `docs/GOLDEN_PATH.md`.
+The result can distinguish:
 
+```text
+CONSISTENT
+WEAKLY_CONSISTENT
+CONFLICT
+INSUFFICIENT_EVIDENCE
+```
 
-A standalone Rust SDK for machine-learning-based drone perception from caller-supplied feature observations. The repository builds and operates without hidden services, non-public crates, remote model registries or closed runtime components.
+without automatically interpreting an inconsistency as malicious activity.
 
-The system boundary is perception and decision-support output only. It contains no jamming, takeover, effector control, engagement, neutralization or autonomous actuation APIs.
+This provides a practical foundation for detecting corrupted, incorrect or inconsistent cooperative information.
 
-## P0
+## Physics-guided micro-Doppler
 
-- validated sensor-agnostic observations and embeddings;
-- deterministic reference encoder;
-- trainable binary detector and multiclass prototype classifier;
-- few-shot class creation and OOD/open-set recognition;
-- confidence, calibration and uncertainty;
-- supervised 3D localization with residual uncertainty;
-- learned measurement-quality and association models;
-- bounded track manager, temporal classification and learned sensor reliability fusion;
-- SHA-256 verified artifacts, benchmark utilities and optional stateless HTTP service.
+Rotating blades, wings and other moving structures create characteristic Doppler modulations.
 
-## P1
+The SDK exposes interpretable micro-Doppler features including:
 
-- multi-observation reliability-weighted classification;
-- temporal self-attention pooling;
-- learned observation-to-track association;
-- probabilistic localization;
-- sensor-domain adaptation;
-- weak-supervision label model;
-- incremental few-shot adaptation;
-- drift monitoring and bounded adversarial robustness evaluation;
-- deterministic synthetic feature trajectories;
-- grouped dataset splitting and version manifests.
+* Doppler centroid
+* Doppler bandwidth
+* periodicity
+* harmonic structure
+* spectral entropy
+* sideband symmetry
+* feature confidence
 
-## P2
+These descriptors can help distinguish drones from birds and other aerial objects, including under degraded SNR conditions.
 
-- bounded graph message passing / GNN-style representation propagation;
-- one-hidden-layer neural 3D localizer with learned residual uncertainty;
-- learned autoregressive trajectory predictor producing informational future positions;
-- multimodal self-attention and transformer-style residual embedding encoder;
-- self-supervised sensor-domain alignment without class labels;
-- uncertainty-weighted localization fusion;
-- in-process federated model-delta aggregation with L2 clipping and no networking;
-- soft-label knowledge distillation;
-- symmetric 2–8 bit fake quantization / int8 representation;
-- heterogeneous compute backend trait with CPU reference backend;
-- weighted classification/detection ensembles;
-- edge parameter profiling;
-- wasm32 core compile gate.
+## 5G / ISAC dual-view sensing
+
+For recorded or authorized ISAC observations, the SDK can combine complementary representations such as:
+
+```text
+micro-Doppler
+      +
+HRRP / range structure
+      +
+kinematics
+      ↓
+fusion
+```
+
+This is useful when one sensing representation alone is ambiguous.
+
+The library remains a sensing consumer and does not control cellular infrastructure.
+
+## Occlusion-aware tracking
+
+Real targets disappear temporarily behind buildings, vegetation, terrain or sensor coverage gaps.
+
+The tracking layer can maintain an uncertainty envelope during missed detections and evaluate later observations for reacquisition.
+
+The reacquisition score can combine:
+
+* predicted kinematics
+* elapsed time
+* embedding similarity
+* class consistency
+* cooperative evidence
+
+Example:
+
+```text
+track 42
+visible
+   ↓
+occluded
+   ↓
+uncertainty grows
+   ↓
+candidate reappears
+   ↓
+reacquisition confidence
+```
+
+## Local group perception
+
+The SDK can analyze multiple simultaneous tracks and identify local motion structure such as:
+
+* group formation
+* spatial coherence
+* velocity coherence
+* convergence
+* divergence
+* fragmentation
+* synchronization
+
+This is perception, not intent attribution.
+
+The library describes observable motion relationships rather than claiming to infer operational intent.
+
+## Sensor contribution ledger
+
+A fused decision can expose which observations contributed to it.
+
+Example:
+
+```text
+DRONE: 0.94
+
+micro-Doppler      +0.30
+RF observation     +0.23
+trajectory         +0.17
+Remote ID conflict +0.11
+ISAC range profile +0.09
+uncertainty        -0.04
+```
+
+These values describe documented fusion contributions.
+
+They should not be interpreted as universal causal explanations unless the underlying model explicitly supports that interpretation.
+
+## Current problems addressed
+
+The project is intended to help research and engineering teams investigate practical sensing problems such as:
+
+* drone vs bird discrimination
+* weak targets in clutter
+* inconsistent Remote ID
+* multiple simultaneous drones
+* temporary sensor dropout
+* track loss during occlusion
+* radar/RF disagreement
+* sensor uncertainty
+* multi-sensor association
+* dense urban airspace
+
+## Example architecture
+
+```text
+Radar ───────┐
+RF ──────────┤
+Remote ID ───┤
+ADS-B ───────┤
+ISAC ────────┤
+             ↓
+      multi-sensor fusion
+             ↓
+     classification
+     localization
+     tracking
+     trust analysis
+     group perception
+             ↓
+       evidence output
+```
 
 ## Quick start
 
 ```bash
-cargo run --example basic
-cargo test --all-features
+git clone https://github.com/nailuJ-dev/anderion-cuas-ml.git
+cd anderion-cuas-ml
+
+cargo build --release
+cargo test --all-targets --all-features
 ```
 
-Optional perception service:
+Run the reference demonstration where available:
 
 ```bash
-cargo run --features server --example build_reference_bundle
-CUAS_MODEL_MANIFEST=artifacts/perception-model.manifest.json \
-CUAS_MODEL_PAYLOAD=artifacts/perception-model.json \
-cargo run --features server --bin anderion-cuas-serve
+cargo run --bin golden_demo
 ```
 
-## Perception boundary
+## Integration with `spectra-sim`
+
+Synthetic radar, RF and ISAC scenarios can be generated externally and passed to this SDK.
 
 ```text
-Caller sensor features
-        |
-        v
- Representation / embedding
-        |
-  +-----+------------------+
-  |     |                  |
-Detect Classify/OOD   Graph/Multimodal ML
-  |     |                  |
-  +-----+---------+--------+
-                  |
-          uncertainty models
-             /          \
-            v            v
-      localization      tracks
-            |             |
-            +------v------+
-             trajectory
-             prediction
+spectra-sim
+    ↓
+physical sensing scenario
+    ↓
+anderion-cuas-ml
+    ↓
+perception + fusion + verification
 ```
 
-Trajectory prediction returns positions only; it does not generate control, targeting, engagement or effector commands.
+The projects remain independently usable.
 
-All algorithms in the default SDK are present in this repository and consume only caller-supplied data. Public extension traits are generic and do not resolve or contact external implementations automatically.
+## Safety boundary
 
-## 0.4 cooperative correlation, degarbling and 5G-MIMO/ISAC
+This repository is deliberately limited to sensing and perception.
 
-The SDK can enrich ML perception with **optional cooperative identity evidence** from caller-supplied, pre-parsed AIS, ADS-B, Remote ID, or custom tracks. `CooperativeCorrelator` performs bounded spatiotemporal/velocity correlation and returns a deterministic `CooperativeDisposition` without mutating the raw ML class scores. This keeps the ML output auditable while allowing applications to identify likely cooperative vessels, aircraft, or UAS and reduce false-positive escalation.
+It does **not** provide:
 
-`EnhancedPerceptionPipeline` can also run an optional `DegarblingModel` before inference. The included `PrototypeMaskDegarbler` is a deterministic reference ML separator driven by non-negative learned/provided prototypes; `IdentityDegarbler` disables separation with zero integration cost.
+* RF jamming
+* communications takeover
+* protocol exploitation
+* effector control
+* weapon guidance
+* target engagement
+* autonomous interception
+* neutralization logic
 
-For 5G-MIMO/ISAC, the crate exposes an `ActiveSensingProvider` contract. Every session requires a bounded `OperatorAuthorization`, a matching `SensingRequest`, supported infrastructure capabilities, and a validity window. The public implementation is `RecordedSensingProvider` for offline testing and replay. Real RAN/vendor adapters are intentionally external to this SDK and must be implemented and authorized by the operator. The SDK ships no waveform generator, base-station scheduler control, private RAN API, or vendor-specific command path.
+The objective is better situational understanding.
 
-`SensingMode::OperatorManagedActive` represents operator-controlled active sensing. Validated `SensingFrame` values convert into ordinary `Observation` values and can derive a deterministic verification context that binds the authorization digest and sensing configuration digest.
+## Design principles
 
-See `docs/COOPERATIVE_DEGARBLING_ISAC.md` for the complete data flow, trust boundary and integration examples.
+* multi-sensor evidence over single-source certainty
+* uncertainty-aware tracking
+* physics-informed features
+* explainable fusion
+* deterministic verification where possible
+* perception-only architecture
+* reproducible evaluation
 
-## Security
+## Contributing
 
-`unsafe` is forbidden. Production source denies `unwrap`, `expect` and `panic` through Clippy. Input and model dimensions are bounded, serialized artifacts are hash/schema/size checked and revalidated, the server is stateless, and federated aggregation performs no networking. CI includes format, Clippy, tests, rustdoc, MSRV, dependency policy and wasm32 core compilation.
+Contributions are particularly useful in:
 
-See `SECURITY.md`, `docs/ARCHITECTURE.md`, `docs/OPERATIONS.md` and `docs/P0_P1_P2_COVERAGE.md`.
+* drone/bird datasets
+* radar and micro-Doppler processing
+* multi-target tracking
+* sensor fusion
+* Remote ID consistency
+* ISAC sensing
+* robustness benchmarks
+* uncertainty calibration
+* real-world validation
+
+Please include reproducible tests and technical references where applicable.
+
+## Support the project
+
+If you find the project useful:
+
+* star the repository
+* test it against public datasets
+* report difficult scenarios
+* contribute sensing algorithms
+* contribute reproducible benchmarks
+* share the project with radar, RF, robotics and airspace-safety teams
+
+The most useful support is independent testing against real sensing problems.
+
+## About
+
+`anderion-cuas-ml` is part of the open-source RF and sensing initiative developed by **Anderion Systems**.
+
+The aim is to make advanced electromagnetic and multi-sensor perception tooling more accessible to engineers, researchers and organizations building safer and more reliable sensing systems.
+
+**Anderion Systems** — https://anderion-systems.com
 
 ## License
 
-Apache-2.0.
-
-## Ontology, recurring patterns, and deterministic verification
-
-Version 0.3.0 adds an opt-in, self-contained reliability layer for perception results. `OntologyGraph` keeps observations, sensors, candidates, object classes, tracks, location estimates, evidence and behaviour patterns semantically coherent. `PatternEngine` detects deterministic recurring temporal sequences and co-occurrences. `VerifiedPerceptionPipeline` wraps the existing perception pipeline and emits a `ResultCertificate` binding canonical input, model/config digests, ontology/pipeline versions, exact result and deterministic decision digest.
-
-Replay classifies a rerun as `Exact`, `DecisionEquivalent`, or `NonReproducible`. The verifier can abstain on excessive uncertainty and request review on semantic contradictions or weak localization confidence. It does not claim physical ground-truth correctness and does not add any effector-control, jamming, takeover, targeting or neutralization capability.
-
-The entire layer is local and standalone: no graph server, remote model endpoint, private crate, private registry or non-public runtime is required.
-
-
-
-## Physics simulator compatibility
-
-This release is continuously tested against the public `spectra-sim` contract. Default compatibility target: `spectra-sim 0.1.1`. The integration is file-based JSON only; there is no Cargo or private-service dependency.
-
-## Compatibility
-
-| SDK | spectra-sim |
-|---|---|
-| 0.5.1 | 0.1.1 |
+See the repository `LICENSE` file.

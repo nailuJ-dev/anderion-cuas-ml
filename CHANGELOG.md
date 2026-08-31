@@ -1,3 +1,11 @@
+## 0.6.0
+
+- Cooperative identity trust assessment.
+- Physics-guided micro-Doppler features.
+- HRRP + micro-Doppler ISAC dual-view fusion.
+- Occlusion-aware reacquisition envelopes.
+- Local group perception and sensor contribution ledger.
+
 
 ## 0.5.0
 
