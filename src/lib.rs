@@ -31,6 +31,9 @@ mod graph;
 mod isac;
 mod linear;
 mod localization;
+mod contribution;
+mod group_perception;
+mod reacquisition;
 mod model;
 mod multimodal;
 mod micro_doppler;
@@ -93,6 +96,9 @@ pub use isac::{
     SensingFrame, SensingMode, SensingRequest, SensingSession,
 };
 pub use localization::LinearLocalizer;
+pub use contribution::{ContributionLedger, SensorContribution};
+pub use group_perception::{FormationType, GroupMember, GroupPerception, perceive_group};
+pub use reacquisition::{ReacquisitionEnvelope, ReacquisitionScore};
 pub use model::{AssociationModel, Classifier, Detector, Encoder, Localizer, OpenSetModel};
 pub use multimodal::{MultimodalSelfAttention, MultimodalTransformerEncoder};
 pub use micro_doppler::{MicroDopplerExtractor, MicroDopplerFeatures};
