@@ -1,4 +1,4 @@
-# Cooperative correlation, optional degarbling, and 5G-MIMO/ISAC
+# Cooperative correlation, optional source separation, and 5G-MIMO/ISAC integration
 
 This extension is designed to keep the C-UAS SDK self-contained and perception-only while allowing applications to enrich ML results with cooperative identity evidence and operator-authorized infrastructure sensing.
 
@@ -17,7 +17,7 @@ Results are sorted deterministically by score, identity kind, identity, distance
 
 Use AIS primarily for maritime/coastal context, ADS-B for cooperative aircraft, and Remote ID for cooperative UAS. The generic contract allows applications to enable only the sources relevant to their environment.
 
-## Optional degarbling
+## Optional source separation (compatibility API: degarbling)
 
 `DegarblingModel` is a replaceable pre-inference interface. `IdentityDegarbler` is the no-op mode. `PrototypeMaskDegarbler` is the public deterministic reference implementation: each feature is softly assigned to non-negative component prototypes and component observations reconstruct the original mixed observation.
 

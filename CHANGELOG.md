@@ -1,3 +1,36 @@
+## 0.7.0
+
+### Added
+
+- Raw complex-I/Q capture contract for bounded DSP inputs.
+- Deterministic Mode S raw-waveform detector/demodulator with 56/112-bit decoding, DF extraction,
+  protocol-aware CRC/overlay handling (including conservative DF20/DF21 AP-or-DP semantics), confidence scoring, and CFO estimation.
+- ATCRBS F1/F2 detector with 1.45 microsecond pulse-grid decoding, Mode A digits, Mode C Gillham
+  bit extraction, SPI detection, and CFO estimation.
+- Successive interference cancellation for overlapping transponder replies.
+- Known-reference regularized LS channel estimation, delay-insensitive CFO compensation, complex CIR, and multipath
+  tap extraction.
+- Generic delay-invariant matched-filter/slow-time-FFT range-Doppler processing with explicit one-way vs monostatic
+  geometry and physical range/velocity axes.
+- 2D CA-CFAR detector for range-Doppler maps with cyclic Doppler-edge training.
+- Bounded range-Doppler map allocation and coherent sample-rate/center-frequency metadata checks.
+- Raw sensing frame adapter for existing operator-authorized ISAC sessions with capture/frame timestamp consistency checks.
+- Synthetic tests for Mode S, ATCRBS, overlapping replies, mixed-protocol garbling, CFO, multipath,
+  range-Doppler, and CFAR.
+
+### Compatibility
+
+- Existing feature-space `DegarblingModel`, `IdentityDegarbler`, and `PrototypeMaskDegarbler` APIs
+  are retained unchanged.
+- Existing feature-based ISAC provider/session API remains unchanged.
+
+## 0.6.1
+
+- Clarify that the `Degarbling*` compatibility API implements generic feature-space source separation, not Mode S / ATCRBS reply degarbling.
+- Clarify that 5G/ISAC support is an operator-authorized integration/consumption contract rather than a RAN controller or generic raw-waveform signal-processing chain.
+- Correct the Golden Path binary command and report fixture results as counts instead of a headline accuracy percentage.
+- Pin the repository toolchain to Rust 1.85.0 for reproducible MSRV behavior.
+
 ## 0.6.0
 
 - Cooperative identity trust assessment.
