@@ -1,9 +1,9 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
-//! Anderion C-UAS ML is a sensor-agnostic perception SDK for user-supplied
-//! features. The crate is limited to detection, classification, tracking,
-//! localization, uncertainty, robustness and evaluation. It contains no
-//! effector control, jamming, takeover, targeting or neutralization logic.
+//! Anderion C-UAS ML is a sensor-agnostic perception and sensing SDK.
+//! It includes passive/cooperative perception, Mode S/ATCRBS raw-waveform
+//! degarbling, and generic channel/range-Doppler processing. It contains no
+//! effector control, jamming, takeover, targeting, or neutralization logic.
 
 mod adaptation;
 mod artifact;
@@ -11,6 +11,7 @@ mod association;
 mod backend;
 mod benchmark;
 mod calibration;
+mod channel_estimation;
 mod classification;
 mod contribution;
 mod cooperative;
@@ -32,6 +33,7 @@ mod graph;
 mod group_perception;
 mod isac;
 mod isac_dual_view;
+mod isac_raw;
 mod linear;
 mod localization;
 mod micro_doppler;
@@ -44,6 +46,9 @@ mod open_set;
 mod pattern;
 mod pipeline;
 mod quantization;
+mod range_doppler;
+mod raw_iq;
+mod raw_waveform;
 mod reacquisition;
 mod robustness;
 mod scenario;
@@ -51,6 +56,7 @@ mod synthetic;
 mod temporal;
 mod tracking;
 mod trajectory;
+mod transponder_degarbling;
 mod trust;
 mod types;
 mod uncertainty;
@@ -68,6 +74,10 @@ pub use association::LearnedAssociation;
 pub use backend::{BackendKind, ComputeBackend, CpuBackend};
 pub use benchmark::{BenchmarkConfig, BenchmarkReport, benchmark_pipeline};
 pub use calibration::TemperatureScaler;
+pub use channel_estimation::{
+    ChannelEstimate, ChannelEstimatorConfig, ChannelTap, KnownReferenceChannelEstimator,
+    estimate_known_reference_cfo,
+};
 pub use classification::PrototypeClassifier;
 pub use contribution::{ContributionLedger, SensorContribution};
 pub use cooperative::{
@@ -99,6 +109,7 @@ pub use isac::{
     SensingFrame, SensingMode, SensingRequest, SensingSession,
 };
 pub use isac_dual_view::{DualViewFusionResult, fuse_isac_dual_view};
+pub use isac_raw::RawSensingFrame;
 pub use localization::LinearLocalizer;
 pub use micro_doppler::{MicroDopplerExtractor, MicroDopplerFeatures};
 pub use model::{AssociationModel, Classifier, Detector, Encoder, Localizer, OpenSetModel};
@@ -108,12 +119,23 @@ pub use neural_localization::NeuralLocalizer;
 pub use open_set::NearestPrototypeOod;
 pub use pipeline::{PerceptionPipeline, PerceptionResult};
 pub use quantization::{QuantizedEmbedding, SymmetricQuantizer};
+pub use range_doppler::{
+    CaCfar2DConfig, PropagationGeometry, RangeDopplerConfig, RangeDopplerDetection,
+    RangeDopplerMap, RangeDopplerProcessor, ca_cfar_2d,
+};
+pub use raw_iq::{ComplexSample, MAX_RAW_IQ_SAMPLES, RawIqCapture};
+pub use raw_waveform::{RawWaveformPipeline, RawWaveformPipelineConfig};
 pub use reacquisition::{ReacquisitionEnvelope, ReacquisitionScore};
 pub use robustness::{AdversarialReport, adversarial_evaluate, bounded_perturbation};
 pub use synthetic::{SyntheticTrajectoryConfig, synthetic_feature_trajectory};
 pub use temporal::{TemporalClassifier, TemporalSelfAttention};
 pub use tracking::{TrackManager, TrackObservation};
 pub use trajectory::{AutoregressiveTrajectoryPredictor, TrajectorySample};
+pub use transponder_degarbling::{
+    AtcrbsReply, ModeSParity, ModeSParityKind, ModeSReply, TransponderDegarbler,
+    TransponderDegarblerConfig, TransponderDegarblingResult, TransponderProtocol, TransponderReply,
+    mode_s_crc_syndrome,
+};
 pub use trust::{
     CooperativeTrustAssessment, CooperativeTrustPolicy, CooperativeTrustVerdict,
     assess_cooperative_trust,

@@ -1,3 +1,20 @@
+# anderion-cuas-ml v0.7.0 direct files
+
+This package contains only the files needed to add the approved professional raw-waveform path to the existing `release/vnext` repository.
+
+Use `MANUAL_EDITS.md` as the copy list.
+
+Core additions:
+
+- real Mode S / ATCRBS raw-I/Q detection and degarbling with successive interference cancellation;
+- Mode S 56/112-bit PPM decoding with DF19/DF24 handling and conservative AP/DP parity semantics;
+- ATCRBS F1/F2 pulse-grid decoding, Mode A digits, Mode C Gillham-bit extraction, SPI;
+- robust gated transponder CFO/complex-gain estimation plus delay-insensitive known-reference CFO estimation;
+- regularized known-reference channel estimation, CIR and multipath taps;
+- generic matched-filter + slow-time FFT range-Doppler map;
+- 2D CA-CFAR;
+- raw sensing frames bound to the existing authorized ISAC session contract.
+
 # anderion-cuas-ml
 
 **Open-source multi-sensor perception for Counter-UAS research and airspace sensing.**
@@ -36,6 +53,17 @@ to build more reliable local perception than any individual sensor can provide a
 * cooperative identification correlation
 * robustness evaluation
 * deterministic verification
+
+## Core additions:
+
+* real Mode S / ATCRBS raw-I/Q detection and degarbling with successive interference cancellation;
+* Mode S 56/112-bit PPM decoding with DF19/DF24 handling and conservative AP/DP parity semantics;
+* ATCRBS F1/F2 pulse-grid decoding, Mode A digits, Mode C Gillham-bit extraction, SPI;
+* robust gated transponder CFO/complex-gain estimation plus delay-insensitive known-reference CFO estimation;
+* regularized known-reference channel estimation, CIR and multipath taps;
+* generic matched-filter + slow-time FFT range-Doppler map;
+* 2D CA-CFAR;
+* raw sensing frames bound to the existing authorized ISAC session contract.
 
 ## Cooperative identity trust
 
@@ -97,7 +125,7 @@ fusion
 
 This is useful when one sensing representation alone is ambiguous.
 
-The library remains a sensing consumer and does not control cellular infrastructure. The public crate consumes recorded or provider-supplied sensing representations. It does not claim to implement a generic raw-5G channel-estimation or range-Doppler processing chain. See `docs/SOURCE_SEPARATION_AND_ISAC_BOUNDARY.md` for the precise boundary.
+The library remains a sensing consumer and does not control cellular infrastructure.
 
 ## Occlusion-aware tracking
 
@@ -144,13 +172,41 @@ This is perception, not intent attribution.
 
 The library describes observable motion relationships rather than claiming to infer operational intent.
 
-### Deterministic verification and replay
+## Raw-waveform transponder degarbling
 
-The verified perception path can bind canonical input, model/configuration context, ontology/pipeline versions, seed, policy and result into deterministic SHA-256-based evidence. Replay distinguishes `Exact`, `DecisionEquivalent` and `NonReproducible`. This is reproducibility/integrity evidence, not a digital signature or proof that cooperative identity data is authentic. See `docs/ONTOLOGY_AND_DETERMINISTIC_VERIFICATION.md`.
+The professional degarbling path operates directly on complex I/Q and supports both Mode S and
+ATCRBS replies. It detects protocol timing, decodes candidate replies, validates Mode S CRC semantics
+where applicable, estimates residual carrier offset, reconstructs replies, and performs successive
+interference cancellation before re-detecting weaker overlapping replies.
 
-### Generic source separation
+```rust
+use anderion_cuas_ml::{RawIqCapture, TransponderDegarbler};
 
-The compatibility API includes `DegarblingModel`, `IdentityDegarbler` and `PrototypeMaskDegarbler`. The current public reference implementation is generic feature-space source separation, not Mode S / ATCRBS transponder-reply degarbling. The API name is retained to avoid a breaking rename; documentation uses “source separation” for the capability itself.
+let result = TransponderDegarbler::default().separate(&capture)?;
+for reply in result.replies() {
+    println!("{:?} confidence={:.3}", reply.protocol(), reply.confidence());
+}
+```
+
+The legacy `PrototypeMaskDegarbler` remains available for feature-space experiments but is not a
+Mode S / ATCRBS waveform degarbler.
+
+See `docs/TRANSPONDER_DEGARBLING.md`.
+
+## Generic raw-waveform sensing
+
+The SDK now includes raw-I/Q channel estimation and range-Doppler processing:
+
+* delay-insensitive known-reference CFO estimation and compensation;
+* regularized LS frequency-response estimation;
+* complex CIR and multipath taps;
+* delay-invariant FFT matched filtering with optional reference-waveform Hann taper;
+* coherent slow-time Doppler FFT;
+* one-way or monostatic physical range/velocity axes;
+* 2D CA-CFAR detections with cyclic Doppler-edge training;
+* `RawSensingFrame` validation against authorized ISAC sessions.
+
+See `docs/RAW_WAVEFORM_SENSING.md`.
 
 ## Sensor contribution ledger
 
@@ -221,7 +277,7 @@ cargo test --all-targets --all-features
 Run the reference demonstration where available:
 
 ```bash
-cargo run --bin cuas-golden-demo
+cargo run --bin golden_demo
 ```
 
 ## Integration with `spectra-sim`
