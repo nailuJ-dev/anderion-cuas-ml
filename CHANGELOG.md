@@ -1,3 +1,10 @@
+## 0.6.1
+
+- Clarify that the `Degarbling*` compatibility API implements generic feature-space source separation, not Mode S / ATCRBS reply degarbling.
+- Clarify that 5G/ISAC support is an operator-authorized integration/consumption contract rather than a RAN controller or generic raw-waveform signal-processing chain.
+- Correct the Golden Path binary command and report fixture results as counts instead of a headline accuracy percentage.
+- Pin the repository toolchain to Rust 1.85.0 for reproducible MSRV behavior.
+
 ## 0.6.0
 
 - Cooperative identity trust assessment.

@@ -97,7 +97,7 @@ fusion
 
 This is useful when one sensing representation alone is ambiguous.
 
-The library remains a sensing consumer and does not control cellular infrastructure.
+The library remains a sensing consumer and does not control cellular infrastructure. The public crate consumes recorded or provider-supplied sensing representations. It does not claim to implement a generic raw-5G channel-estimation or range-Doppler processing chain. See `docs/SOURCE_SEPARATION_AND_ISAC_BOUNDARY.md` for the precise boundary.
 
 ## Occlusion-aware tracking
 
@@ -143,6 +143,14 @@ The SDK can analyze multiple simultaneous tracks and identify local motion struc
 This is perception, not intent attribution.
 
 The library describes observable motion relationships rather than claiming to infer operational intent.
+
+### Deterministic verification and replay
+
+The verified perception path can bind canonical input, model/configuration context, ontology/pipeline versions, seed, policy and result into deterministic SHA-256-based evidence. Replay distinguishes `Exact`, `DecisionEquivalent` and `NonReproducible`. This is reproducibility/integrity evidence, not a digital signature or proof that cooperative identity data is authentic. See `docs/ONTOLOGY_AND_DETERMINISTIC_VERIFICATION.md`.
+
+### Generic source separation
+
+The compatibility API includes `DegarblingModel`, `IdentityDegarbler` and `PrototypeMaskDegarbler`. The current public reference implementation is generic feature-space source separation, not Mode S / ATCRBS transponder-reply degarbling. The API name is retained to avoid a breaking rename; documentation uses “source separation” for the capability itself.
 
 ## Sensor contribution ledger
 
@@ -213,7 +221,7 @@ cargo test --all-targets --all-features
 Run the reference demonstration where available:
 
 ```bash
-cargo run --bin golden_demo
+cargo run --bin cuas-golden-demo
 ```
 
 ## Integration with `spectra-sim`

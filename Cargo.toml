@@ -1,10 +1,11 @@
 [package]
 name = "anderion-cuas-ml"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2024"
 rust-version = "1.85"
 license = "Apache-2.0"
-description = "Secure machine-learning SDK for drone detection, classification, cooperative correlation, tracking, localization, optional degarbling, operator-authorized ISAC sensing, uncertainty, and evaluation."
+repository = "https://github.com/nailuJ-dev/anderion-cuas-ml"
+description = "Secure machine-learning SDK for drone detection, classification, cooperative correlation, tracking, localization, optional source separation, operator-authorized ISAC integration, uncertainty, and evaluation."
 readme = "README.md"
 keywords = ["machine-learning", "drone-detection", "classification", "tracking", "localization"]
 categories = ["science", "algorithms"]

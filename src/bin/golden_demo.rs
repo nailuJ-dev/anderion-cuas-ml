@@ -83,8 +83,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     println!("  replay: {:?}", document.replay);
     println!(
-        "  fixture accuracy: {:.1}%",
-        document.evaluation.accuracy * 100.0
+        "  fixture check: {}/{} labeled fixtures correct",
+        document.evaluation.correct, document.evaluation.scenarios
     );
     println!("  result: {}", output.display());
     println!("  NOTE: fixture/recorded metrics are pipeline validation, not field performance.");
