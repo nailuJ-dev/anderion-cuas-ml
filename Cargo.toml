@@ -8,6 +8,7 @@ description = "Secure C-UAS perception SDK with Mode S/ATCRBS raw-waveform degar
 readme = "README.md"
 keywords = ["machine-learning", "drone-detection", "classification", "tracking", "localization"]
 categories = ["science", "algorithms"]
+repository = "https://github.com/nailuJ-dev/anderion-cuas-ml"
 publish = false
 
 [features]
@@ -34,7 +35,8 @@ required-features = ["server"]
 [profile.release]
 lto = "thin"
 codegen-units = 1
-panic = "abort"
+# panic = "abort" retiré : un panic handler ne doit pas abattre anderion-cuas-serve.
+# Isolation par tâche tokio + catch_unwind côté serveur à la place.
 strip = "symbols"
 
 [lints.rust]
