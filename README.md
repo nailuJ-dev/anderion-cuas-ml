@@ -277,7 +277,7 @@ cargo test --all-targets --all-features
 Run the reference demonstration where available:
 
 ```bash
-cargo run --bin golden_demo
+cargo run --release --locked --bin cuas-golden-demo
 ```
 
 ## Integration with `spectra-sim`
