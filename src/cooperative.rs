@@ -181,6 +181,44 @@ impl CooperativeTrack {
     pub fn source_confidence(&self) -> f32 {
         self.source_confidence
     }
+
+    /// Builds a Remote ID track from a transmitter decoded and judged by the
+    /// `remoteid` crate. `source_confidence` is its trust score, and 0 when
+    /// the transmitter is judged spoofed. Returns `None` until the
+    /// transmitter has broadcast an identity, a position and an altitude.
+    #[cfg(feature = "remoteid")]
+    pub fn from_remote_id(uas: &remoteid::TrackedUas) -> Result<Option<Self>> {
+        let (Some(identity), Some((timestamp_ms, latitude, longitude, _)), Some(location)) =
+            (uas.uas_id(), uas.last_fix(), uas.data.location.as_ref())
+        else {
+            return Ok(None);
+        };
+        let Some(altitude) = location.altitude_geo.or(location.altitude_baro) else {
+            return Ok(None);
+        };
+        let velocity = match (location.speed_horizontal, location.direction) {
+            (Some(speed), Some(direction)) => {
+                let (sin, cos) = f64::from(direction).to_radians().sin_cos();
+                let speed = f64::from(speed);
+                let down = -f64::from(location.speed_vertical.unwrap_or(0.0));
+                Some(VelocityNed::new(speed * cos, speed * sin, down)?)
+            }
+            _ => None,
+        };
+        let source_confidence = match uas.assessment.verdict {
+            remoteid::Verdict::Spoofed => 0.0,
+            _ => uas.assessment.score,
+        };
+        Self::new(
+            CooperativeIdentityKind::RemoteId,
+            identity,
+            timestamp_ms,
+            GeoPosition::new(latitude, longitude, f64::from(altitude))?,
+            velocity,
+            source_confidence,
+        )
+        .map(Some)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
